@@ -23,6 +23,6 @@ public class RootController {
      */
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
-        return ok("Welcome to civil-rtl-export");
+        return ok("Welcome to Civil RTL Export");
     }
 }
