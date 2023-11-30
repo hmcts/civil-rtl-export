@@ -1,11 +1,11 @@
 apiVersion: v2
 appVersion: "1.0"
-description: A Helm chart for spring-boot-template App
-name: rpe-spring-boot-template
-home: https://github.com/hmcts/spring-boot-template
+description: A Helm chart for civil-rtl-export App
+name: civil-rtl-export
+home: https://github.com/hmcts/civil-rtl-export
 version: 0.0.13
 maintainers:
-  - name: HMCTS rpe team
+  - name: HMCTS civil team
 dependencies:
   - name: java
     version: 5.0.2
