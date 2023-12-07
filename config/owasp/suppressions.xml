@@ -13,7 +13,7 @@
 
   <!--Please add all the temporary suppression under the below section-->
   <suppress>
-    <notes>
+    <notes>Temporary Suppressions
       CVE-2023-6378
     </notes>
     <cve>CVE-2023-6378</cve>
