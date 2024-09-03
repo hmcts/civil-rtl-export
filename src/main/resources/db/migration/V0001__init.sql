@@ -26,10 +26,18 @@ defendant_dob DATE,
 reported_to_rtl TIMESTAMP(2)
 );
 
+
+------------------------------------------------
+-- Create indices
+------------------------------------------------
+CREATE UNIQUE INDEX judgements_pk ON judgements (id);
+
+
 ------------------------------------------------
 -- Create Primary Keys
 ------------------------------------------------
 ALTER TABLE judgements ADD CONSTRAINT j_i_pk PRIMARY KEY USING INDEX judgements_pk;
+
 
 ------------------------------------------------
 -- Create Check Constraints
@@ -40,18 +48,12 @@ ALTER TABLE judgements ADD CONSTRAINT judgement_event_timestamp CHECK (judgement
 ALTER TABLE judgements ADD CONSTRAINT court_code CHECK (court_code IS NOT NULL);
 ALTER TABLE judgements ADD CONSTRAINT ccd_case_ref CHECK (ccd_case_ref IS NOT NULL);
 ALTER TABLE judgements ADD CONSTRAINT case_number CHECK (case_number IS NOT NULL);
-ALTER TABLE judgements ADD CONSTRAINT judgement_admin_order_total (judgement_admin_order_total IS NOT NULL);
-ALTER TABLE judgements ADD CONSTRAINT judgement_admin_order_date (judgement_admin_order_date IS NOT NULL);
-ALTER TABLE judgements ADD CONSTRAINT registration_type (registration_type IS NOT NULL);
-ALTER TABLE judgements ADD CONSTRAINT defendant_name (defendant_name IS NOT NULL);
-ALTER TABLE judgements ADD CONSTRAINT defendant_address_line_1 (defendant_address_line_1 IS NOT NULL);
-ALTER TABLE judgements ADD CONSTRAINT defendant_address_postcode (defendant_address_postcode IS NOT NULL);
-
-
-------------------------------------------------
--- Create indices
-------------------------------------------------
-CREATE UNIQUE INDEX judgements_pk ON judgements (id);
+ALTER TABLE judgements ADD CONSTRAINT judgement_admin_order_total CHECK (judgement_admin_order_total IS NOT NULL);
+ALTER TABLE judgements ADD CONSTRAINT judgement_admin_order_date CHECK (judgement_admin_order_date IS NOT NULL);
+ALTER TABLE judgements ADD CONSTRAINT registration_type CHECK (registration_type IS NOT NULL);
+ALTER TABLE judgements ADD CONSTRAINT defendant_name CHECK (defendant_name IS NOT NULL);
+ALTER TABLE judgements ADD CONSTRAINT defendant_address_line_1 CHECK (defendant_address_line_1 IS NOT NULL);
+ALTER TABLE judgements ADD CONSTRAINT defendant_address_postcode CHECK (defendant_address_postcode IS NOT NULL);
 
 
 ------------------------------------------------
@@ -60,6 +62,7 @@ CREATE UNIQUE INDEX judgements_pk ON judgements (id);
 ALTER TABLE judgements ADD CONSTRAINT j_si_ji_uniq UNIQUE (service_id, judgement_id);
 
 
+------------------------------------------------
 -- Create Sequences for PUBLIC
 ------------------------------------------------
 CREATE SEQUENCE judg_seq MINVALUE 1 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 NO CYCLE;

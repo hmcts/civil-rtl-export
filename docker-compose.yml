@@ -11,6 +11,7 @@ services:
     image: hmcts/civil-rtl-export
     environment:
       # these environment variables are used by java-logging library
+      - JF_DB_HOST=civil-jf-database
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
       - ROOT_LOGGING_LEVEL
