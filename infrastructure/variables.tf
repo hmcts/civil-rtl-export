@@ -14,3 +14,8 @@ variable "common_tags" {
   type = map(string)
 }
 
+variable "aks_subscription_id" {
+  type        = string
+  description = "The AKS subscription id for the environment.  Set by pipeline."
+}
+
