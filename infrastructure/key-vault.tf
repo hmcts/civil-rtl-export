@@ -31,4 +31,3 @@ resource "azurerm_key_vault_secret" "s2s" {
   value        = data.azurerm_key_vault_secret.key_from_vault.value
   key_vault_id = module.civil_rtl_export_key_vault.key_vault_id
 }
-
