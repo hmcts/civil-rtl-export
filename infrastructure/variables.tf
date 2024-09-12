@@ -36,7 +36,3 @@ variable "jenkins_AAD_objectId" {
   description = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
 }
 
-variable "database_backup_retention_days" {
-  default     = 35
-  description = "Backup retention period in days for the PGSql instance. Valid values are between 7 & 35 days"
-}
