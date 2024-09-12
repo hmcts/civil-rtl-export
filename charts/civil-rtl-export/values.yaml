@@ -10,3 +10,14 @@ java:
 #        - name: AppInsightsInstrumentationKey
 #          alias: azure.application-insights.instrumentation-key
   environment:
+    JF_DB_NAME: civil_jf
+    JF_DB_PORT: 5432
+  keyVaults:
+    civil-rtl-export:
+      secrets:
+        - name: civil-rtl-export-POSTGRES-USER-V15
+          alias: JF_DB_USERNAME
+        - name: civil-rtl-export-POSTGRES-PASS-V15
+          alias: JF_DB_PASSWORD
+        - name: civil-rtl-export-POSTGRES-HOST-V15
+          alias: JF_DB_HOST
