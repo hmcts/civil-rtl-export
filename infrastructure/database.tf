@@ -19,7 +19,6 @@ module "postgresql-v15" {
   pgsql_version         = "15"
   product               = var.product
   name                  = join("-", [var.product, var.component, "v15"])
-  backup_retention_days = var.database_backup_retention_days
 }
 
 # Create secret for database user
