@@ -10,7 +10,7 @@ java:
 #        - name: AppInsightsInstrumentationKey
 #          alias: azure.application-insights.instrumentation-key
   environment:
-    JF_DB_NAME: civil_jf
+    JF_DB_NAME: civil_rtl_export
     JF_DB_PORT: 5432
   keyVaults:
     civil-rtl-export:
