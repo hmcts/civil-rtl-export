@@ -21,7 +21,7 @@ spring:
     allow-bean-definition-overriding: true
     allow-circular-references: true
   config:
-    import: "optional:configtree:/mnt/secrets/civil-jf/"
+    import: "optional:configtree:/mnt/secrets/civil-rtl-export/"
   application:
     name: Civil Judgement Feed
   datasource:
