@@ -10,6 +10,7 @@ module "postgresql-v15" {
   common_tags          = local.tags
   component            = var.component
   env                  = var.env
+  subnet_suffix        = "expanded"
   pgsql_databases = [
     {
       name = "civil_rtl_export"
