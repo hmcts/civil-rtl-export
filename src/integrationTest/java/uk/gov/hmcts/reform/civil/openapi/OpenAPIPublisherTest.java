@@ -27,8 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("itest")
 class OpenAPIPublisherTest {
 
+    private final MockMvc mvc;
+
     @Autowired
-    private MockMvc mvc;
+    public OpenAPIPublisherTest(MockMvc mockMvc) {
+        mvc = mockMvc;
+    }
 
     @DisplayName("Generate swagger documentation")
     @Test
