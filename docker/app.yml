@@ -25,14 +25,14 @@ services:
     ports:
       - $SERVER_PORT:$SERVER_PORT
     depends_on:
-      - civil-jf-database
+      - civil-rtl-export-database
     links:
-      - civil-jf-database
+      - civil-rtl-export-database
 
-  civil-jf-database:
+  civil-rtl-export-database:
     build:
       context: docker/database
-    image: hmcts/civil-jf-database
+    image: hmcts/civil-rtl-export-database
     healthcheck:
       interval: 10s
       timeout: 10s
@@ -43,7 +43,7 @@ services:
     ports:
       - 5455:5432
     volumes:
-      - civil-jf-database-data:/var/lib/postgresql/data
+      - civil-rtl-export-database-data:/var/lib/postgresql/data
 
 volumes:
-  civil-jf-database-data:
+  civil-rtl-export-database-data:

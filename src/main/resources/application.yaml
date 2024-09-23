@@ -11,8 +11,9 @@ management:
       exposure:
         include: health, info, prometheus
 
-#springdoc:
-#  packagesToScan: uk.gov.moj.sdt.controllers
+springdoc:
+  packagesToScan: uk.gov.hmcts.reform.civil.controllers
+  writer-with-order-by-keys: true
 
 spring:
   aop:
@@ -26,7 +27,7 @@ spring:
     name: Civil Judgement Feed
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${JF_DB_HOST:localhost}:${JF_DB_PORT:5432}/${JF_DB_NAME:civil_jf}${JF_DB_OPTIONS:}
+    url: jdbc:postgresql://${JF_DB_HOST:localhost}:${JF_DB_PORT:5432}/${JF_DB_NAME:civil_rtl_export}${JF_DB_OPTIONS:}
     username: ${JF_DB_USERNAME:jf_user}
     password: ${JF_DB_PASSWORD:jf_pass}
     hikari:

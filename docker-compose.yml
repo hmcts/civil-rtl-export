@@ -11,7 +11,6 @@ services:
     image: hmcts/civil-rtl-export
     environment:
       # these environment variables are used by java-logging library
-      - JF_DB_HOST=civil-jf-database
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
       - ROOT_LOGGING_LEVEL
@@ -23,16 +22,17 @@ services:
       - LOGBACK_REQUIRE_THREAD
       - LOGBACK_REQUIRE_ALERT_LEVEL=false
       - LOGBACK_REQUIRE_ERROR_CODE=false
+      - JF_DB_HOST=civil-rtl-export-database
     ports:
       - $SERVER_PORT:$SERVER_PORT
     depends_on:
-      - civil-jf-database
+      - civil-rtl-export-database
     links:
-      - civil-jf-database
-  civil-jf-database:
+      - civil-rtl-export-database
+  civil-rtl-export-database:
     build:
       context: docker/database
-    image: hmcts/civil-jf-database
+    image: hmcts/civil-rtl-export-database
     healthcheck:
       interval: 10s
       timeout: 10s
@@ -44,7 +44,7 @@ services:
     ports:
       - 5455:5432
     volumes:
-      - civil-jf-database-data:/var/lib/postgresql/data
+      - civil-rtl-export-database-data:/var/lib/postgresql/data
 
 volumes:
-  civil-jf-database-data:
+  civil-rtl-export-database-data:
