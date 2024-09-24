@@ -45,7 +45,7 @@ ALTER TABLE judgements ADD CONSTRAINT jud_pk PRIMARY KEY USING INDEX jud_ind_pk;
 ALTER TABLE judgements ADD CONSTRAINT j_ser_id_nn CHECK (service_id IS NOT NULL);
 ALTER TABLE judgements ADD CONSTRAINT j_jud_id_nn CHECK (judgement_id IS NOT NULL);
 ALTER TABLE judgements ADD CONSTRAINT j_jud_eve_tim_nn CHECK (judgement_event_timestamp IS NOT NULL);
-ALTER TABLE judgements ADD CONSTRAINT j_cou_code_nn CHECK (court_code IS NOT NULL);
+ALTER TABLE judgements ADD CONSTRAINT j_cou_cod_nn CHECK (court_code IS NOT NULL);
 ALTER TABLE judgements ADD CONSTRAINT j_ccd_cas_ref_nn CHECK (ccd_case_ref IS NOT NULL);
 ALTER TABLE judgements ADD CONSTRAINT j_cas_num_nn CHECK (case_number IS NOT NULL);
 ALTER TABLE judgements ADD CONSTRAINT j_jud_adm_ord_tot_nn CHECK (judgement_admin_order_total IS NOT NULL);
