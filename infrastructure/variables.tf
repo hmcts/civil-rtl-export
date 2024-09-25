@@ -6,6 +6,10 @@ variable "location" {
   default = "UK South"
 }
 
+variable "alert_location" {
+  type = string
+}
+
 variable "env" {}
 
 variable "subscription" {}

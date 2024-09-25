@@ -5,6 +5,7 @@ module "application_insights" {
   product             = var.product
   name                = "${var.product}-${var.component}-appinsights"
   location            = var.location
+  alert_location      = var.location    # passing var.location to alert_location
   resource_group_name = azurerm_resource_group.civil_rtl_export_rg.name
 
   common_tags = var.common_tags
