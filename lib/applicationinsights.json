@@ -1,5 +1,5 @@
 {
-  "connectionString": "${file:/mnt/secrets/civil/app-insights-connection-string}",
+  "connectionString": "${file:/mnt/secrets/civil-rtl-export/APPINSIGHTS_CONNECTION_STRING}",
   "role": {
     "name": "civil-rtl-export"
   },
