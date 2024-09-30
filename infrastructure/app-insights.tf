@@ -6,6 +6,7 @@ module "application_insights" {
   name                = "${var.product}-${var.component}-appinsights"
   location            = var.location
   resource_group_name = azurerm_resource_group.civil_rtl_export_rg.name
+  alert_limit_reached = true
 
   common_tags = var.common_tags
 }
