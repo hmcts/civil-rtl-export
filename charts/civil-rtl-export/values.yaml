@@ -3,12 +3,11 @@ java:
   image: 'hmctspublic.azurecr.io/civil/rtl-export:latest'
   ingressHost: civil-rtl-export-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: civil
-#  Uncomment once the vault containing the app insights key has been set up
-#  keyVaults:
-#    civil:
-#      secrets:
-#        - name: AppInsightsInstrumentationKey
-#          alias: azure.application-insights.instrumentation-key
+  keyVaults:
+    civil:
+      secrets:
+        - name: AppInsightsInstrumentationKey
+          alias: APPINSIGHTS_CONNECTION_STRING
   environment:
     JF_DB_NAME: civil_rtl_export
     JF_DB_PORT: 5432
