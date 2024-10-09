@@ -15,34 +15,74 @@ springdoc:
   packagesToScan: uk.gov.hmcts.reform.civil.controllers
   writer-with-order-by-keys: true
 
-#If you use a database then uncomment below lines and update db properties accordingly
 spring:
+  aop:
+    proxy-target-class: false
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
   config:
-    import: "optional:configtree:/mnt/secrets/civil/"
+    import: "optional:configtree:/mnt/secrets/civil-rtl-export/"
   application:
-    name: Spring Boot Template
-#  datasource:
-#    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
-#    username: ${DB_USER_NAME}
-#    password: ${DB_PASSWORD}
-#    properties:
-#      charSet: UTF-8
-#    hikari:
-#      minimumIdle: 2
-#      maximumPoolSize: 10
-#      idleTimeout: 10000
-#      poolName: {to-be-defined}HikariCP
-#      maxLifetime: 7200000
-#      connectionTimeout: 30000
-#  jpa:
-#    properties:
-#      hibernate:
-#        jdbc:
-#          lob:
-#            # silence the 'wall-of-text' - unnecessary exception throw about blob types
-#            non_contextual_creation: true
+    name: Civil Judgement Feed
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${JF_DB_HOST:localhost}:${JF_DB_PORT:5432}/${JF_DB_NAME:civil_rtl_export}${JF_DB_OPTIONS:}
+    username: ${JF_DB_USERNAME:jf_user}
+    password: ${JF_DB_PASSWORD:jf_pass}
+    hikari:
+      minimumIdle: ${JF_DB_MIN_IDLE:2}
+      maximumPoolSize: ${JF_DB_MAX_POOL_SIZE:8}
+      idleTimeout: ${JF_DB_IDLE_TIMEOUT:300000}
+      maxLifetime: ${JF_DB_MAX_LIFTIME:7200000}
+      connectionTimeout: 60000
+  jpa:
+    open-in-view: false
+    database: postgresql
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_versioned_data: true
+          batch_size: 100
+        temp:
+          use_jdbc_metadata_defaults: false
+  flyway:
+    ignore-missing-migrations: 'true'
+    baseline-version: '0001'
+    out-of-order: 'true'
+    baseline-on-migrate: 'true'
 
-azure:
-  application-insights:
-    instrumentation-key: ${civil.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+feign:
+  circuitbreaker:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: BASIC
+      postFeignClient:
+        loggerLevel: FULL
+#idam:
+#  s2s-authorised:
+#    services: ${CIVIL_SDT_S2S_AUTHORISED_SERVICES:civil_sdt}
+#  s2s-auth:
+#    microservice: civil_sdt
+#    totp_secret: ${CIVIL_SDT_S2S_KEY:AAAAAAAAAAAAAAAA}
+#    url: ${IDAM_S2S_URL:http://localhost:4502}
+#  sdt:
+#    username: ${IDAM_SDT_USERNAME:master.sdt@gmail.com}
+#    password: ${IDAM_SDT_PASSWORD:Pa55word11}
+#  api:
+#    url: ${IDAM_API_URL:http://localhost:5000}
+#  client:
+#    id: civil_sdt
+#    secret: ${IDAM_SDT_CLIENT_SECRET:civil_sdt_secret}
+#    scope: openid profile roles
+#    # The redirect_uri property is not used by SDT.  Included as required by IDAM for token generation.
+#    redirect_uri: http://civil-sdt/oauth2redirect
+#civil:
+#  api:
+#    url: ${CIVIL_API_URL:http://localhost:5000}
