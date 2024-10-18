@@ -22,13 +22,13 @@ services:
       - LOGBACK_REQUIRE_THREAD
       - LOGBACK_REQUIRE_ALERT_LEVEL=false
       - LOGBACK_REQUIRE_ERROR_CODE=false
-      - JF_DB_HOST=civil-rtl-export-database
     ports:
       - $SERVER_PORT:$SERVER_PORT
     depends_on:
       - civil-rtl-export-database
     links:
       - civil-rtl-export-database
+
   civil-rtl-export-database:
     build:
       context: docker/database
@@ -40,7 +40,6 @@ services:
     environment:
       - JF_DB_USERNAME=jf_user
       - JF_DB_PASSWORD=jf_pass
-      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - 5455:5432
     volumes:
