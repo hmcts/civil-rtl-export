@@ -90,27 +90,27 @@ public class Judgment {
     // toString Method
     @Override
     public String toString() {
-        return "Judgments[" + "id=" + id +
-                ", versionNumber=" + versionNumber +
-                ", serviceId=" + serviceId +
-                ", judgmentId=" + judgmentId +
-                ", judgmentEventTimestamp=" + judgmentEventTimestamp +
-                ", courtCode=" + courtCode +
-                ", ccdCaseRef=" + ccdCaseRef +
-                ", caseNumber=" + caseNumber +
-                ", judgmentAdminOrderTotal=" + judgmentAdminOrderTotal +
-                ", judgmentAdminOrderDate=" + judgmentAdminOrderDate +
-                ", registrationType=" + registrationType +
-                ", cancellationDate=" + cancellationDate +
-                ", defendantName=" + defendantName +
-                ", defendantAddressLine1=" + defendantAddressLine1 +
-                ", defendantAddressLine2=" + defendantAddressLine2 +
-                ", defendantAddressLine3=" + defendantAddressLine3 +
-                ", defendantAddressLine4=" + defendantAddressLine4 +
-                ", defendantAddressLine5=" + defendantAddressLine5 +
-                ", defendantAddressPostcode=" + defendantAddressPostcode +
-                ", defendantDob=" + defendantDob +
-                ", reportedToRtl=" + reportedToRtl +
-                "]";
+        return "Judgments[" + "id=" + id
+                + ", versionNumber=" + versionNumber
+                + ", serviceId=" + serviceId
+                + ", judgmentId=" + judgmentId
+                + ", judgmentEventTimestamp=" + judgmentEventTimestamp
+                + ", courtCode=" + courtCode
+                + ", ccdCaseRef=" + ccdCaseRef
+                + ", caseNumber=" + caseNumber
+                + ", judgmentAdminOrderTotal=" + judgmentAdminOrderTotal
+                + ", judgmentAdminOrderDate=" + judgmentAdminOrderDate
+                + ", registrationType=" + registrationType
+                + ", cancellationDate=" + cancellationDate
+                + ", defendantName=" + defendantName
+                + ", defendantAddressLine1=" + defendantAddressLine1
+                + ", defendantAddressLine2=" + defendantAddressLine2
+                + ", defendantAddressLine3=" + defendantAddressLine3
+                + ", defendantAddressLine4=" + defendantAddressLine4
+                + ", defendantAddressLine5=" + defendantAddressLine5
+                + ", defendantAddressPostcode=" + defendantAddressPostcode
+                + ", defendantDob=" + defendantDob
+                + ", reportedToRtl=" + reportedToRtl
+                + "]";
     }
 }
