@@ -2,10 +2,10 @@ plugins {
   id 'application'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.6'
-  id 'org.springframework.boot' version '3.3.4'
+  id 'org.springframework.boot' version '3.3.5'
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '5.1.0.4882'
-  id "org.flywaydb.flyway" version "10.17.2"
+  id "org.flywaydb.flyway" version "10.22.0"
   id "io.freefair.lombok" version "8.10.2"
   /*
     Applies analysis tools including checkstyle and OWASP Dependency checker.
@@ -168,12 +168,12 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.17.2'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.21.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.4'
 
-  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.2'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.3'
 
-  testImplementation(platform('org.junit:junit-bom:5.11.2'))
+  testImplementation(platform('org.junit:junit-bom:5.11.3'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
