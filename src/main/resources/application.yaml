@@ -86,3 +86,181 @@ feign:
 #civil:
 #  api:
 #    url: ${CIVIL_API_URL:http://localhost:5000}
+
+validate:
+  service-ids[0]: "AAA3"
+  service-ids[1]: "AAA6"
+  service-ids[2]: "AAA7"
+replace:
+  character-replacements:
+    - charValue: 192
+      description: "Latin capital letter A with grave"
+      replacement: "A"
+    - charValue: 193
+      description: "Latin capital letter A with acute"
+      replacement: "A"
+    - charValue: 194
+      description: "Latin capital letter A with circumflex"
+      replacement: "A"
+    - charValue: 196
+      description: "Latin capital letter A with dieresis"
+      replacement: "A"
+    - charValue: 200
+      description: "Latin capital letter E with grave"
+      replacement: "E"
+    - charValue: 201
+      description: "Latin capital letter E with acute"
+      replacement: "E"
+    - charValue: 202
+      description: "Latin capital letter E with circumflex"
+      replacement: "E"
+    - charValue: 203
+      description: "Latin capital letter E with dieresis"
+      replacement: "E"
+    - charValue: 204
+      description: "Latin capital letter I with grave"
+      replacement: "I"
+    - charValue: 205
+      description: "Latin capital letter I with acute"
+      replacement: "I"
+    - charValue: 206
+      description: "Latin capital letter I with circumflex"
+      replacement: "I"
+    - charValue: 207
+      description: "Latin capital letter I with dieresis"
+      replacement: "I"
+    - charValue: 210
+      description: "Latin capital letter O with grave"
+      replacement: "O"
+    - charValue: 211
+      description: "Latin capital letter O with acute"
+      replacement: "O"
+    - charValue: 212
+      description: "Latin capital letter O with circumflex"
+      replacement: "O"
+    - charValue: 214
+      description: "Latin capital letter O with dieresis"
+      replacement: "O"
+    - charValue: 217
+      description: "Latin capital letter U with grave"
+      replacement: "U"
+    - charValue: 218
+      description: "Latin capital letter U with acute"
+      replacement: "U"
+    - charValue: 219
+      description: "Latin capital letter U with circumflex"
+      replacement: "U"
+    - charValue: 220
+      description: "Latin capital letter U with dieresis"
+      replacement: "U"
+    - charValue: 7808
+      description: "Latin capital letter W with grave"
+      replacement: "W"
+    - charValue: 7810
+      description: "Latin capital letter W with acute"
+      replacement: "W"
+    - charValue: 372
+      description: "Latin capital letter W with circumflex"
+      replacement: "W"
+    - charValue: 7812
+      description: "Latin capital letter W with dieresis"
+      replacement: "W"
+    - charValue: 7922
+      description: "Latin capital letter Y with grave"
+      replacement: "Y"
+    - charValue: 221
+      description: "Latin capital letter Y with acute"
+      replacement: "Y"
+    - charValue: 374
+      description: "Latin capital letter Y with circumflex"
+      replacement: "Y"
+    - charValue: 376
+      description: "Latin capital letter Y with dieresis"
+      replacement: "Y"
+    - charValue: 198
+      description: "Latin capital letter AE"
+      replacement: "AE"
+    - charValue: 224
+      description: "Latin small letter A with grave"
+      replacement: "a"
+    - charValue: 225
+      description: "Latin small letter A with acute"
+      replacement: "a"
+    - charValue: 226
+      description: "Latin small letter A with circumflex"
+      replacement: "a"
+    - charValue: 228
+      description: "Latin small letter A with dieresis"
+      replacement: "a"
+    - charValue: 232
+      description: "Latin small letter E with grave"
+      replacement: "e"
+    - charValue: 233
+      description: "Latin small letter E with acute"
+      replacement: "e"
+    - charValue: 234
+      description: "Latin small letter E with circumflex"
+      replacement: "e"
+    - charValue: 235
+      description: "Latin small letter E with dieresis"
+      replacement: "e"
+    - charValue: 236
+      description: "Latin small letter I with grave"
+      replacement: "i"
+    - charValue: 237
+      description: "Latin small letter I with acute"
+      replacement: "i"
+    - charValue: 238
+      description: "Latin small letter I with circumflex"
+      replacement: "i"
+    - charValue: 239
+      description: "Latin small letter I with dieresis"
+      replacement: "i"
+    - charValue: 242
+      description: "Latin small letter O with grave"
+      replacement: "o"
+    - charValue: 243
+      description: "Latin small letter O with acute"
+      replacement: "o"
+    - charValue: 244
+      description: "Latin small letter O with circumflex"
+      replacement: "o"
+    - charValue: 246
+      description: "Latin small letter O with dieresis"
+      replacement: "o"
+    - charValue: 249
+      description: "Latin small letter U with grave"
+      replacement: "u"
+    - charValue: 250
+      description: "Latin small letter U with acute"
+      replacement: "u"
+    - charValue: 251
+      description: "Latin small letter U with circumflex"
+      replacement: "u"
+    - charValue: 252
+      description: "Latin small letter U with dieresis"
+      replacement: "u"
+    - charValue: 7809
+      description: "Latin small letter W with grave"
+      replacement: "w"
+    - charValue: 7811
+      description: "Latin small letter W with acute"
+      replacement: "w"
+    - charValue: 373
+      description: "Latin small letter W with circumflex"
+      replacement: "w"
+    - charValue: 7813
+      description: "Latin small letter W with dieresis"
+      replacement: "w"
+    - charValue: 7923
+      description: "Latin small letter Y with grave"
+      replacement: "y"
+    - charValue: 253
+      description: "Latin small letter Y with acute"
+      replacement: "y"
+    - charValue: 375
+      description: "Latin small letter Y with circumflex"
+      replacement: "y"
+    - charValue: 255
+      description: "Latin small letter Y with dieresis"
+      replacement: "y"

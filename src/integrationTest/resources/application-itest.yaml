@@ -1,5 +1,22 @@
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:postgresql:15:///databasename?stringtype=unspecified
+    url: jdbc:tc:postgresql:15:///civil_rtl_export_db?stringtype=unspecified
+  test:
+    database:
+      replace: none
 
+validate:
+  service-ids[0]: "IT01"
+  service-ids[1]: "IT02"
+replace:
+  character-replacements:
+    - charValue: 207
+      description: "Latin capital letter I with dieresis"
+      replacement: "I"
+    - charValue: 212
+      description: "Latin capital letter O with circumflex"
+      replacement: "O"
+    - charValue: 189
+      description: "Vulgar fraction one half"
+      replacement: ".5"
