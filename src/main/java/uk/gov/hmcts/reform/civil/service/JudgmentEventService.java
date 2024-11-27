@@ -4,11 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
+import uk.gov.hmcts.reform.civil.exception.DifferentNumberOfDefendantsException;
+import uk.gov.hmcts.reform.civil.exception.UpdateExistingJudgmentException;
 import uk.gov.hmcts.reform.civil.model.JudgmentEvent;
 import uk.gov.hmcts.reform.civil.model.RegistrationType;
+import uk.gov.hmcts.reform.civil.repository.JudgmentRepository;
 import uk.gov.hmcts.reform.civil.service.validate.JudgmentEventValidatorService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,14 +22,17 @@ public class JudgmentEventService {
     private final JudgmentEventValidatorService judgmentEventValidatorService;
     private final RefDataService refDataService;
     private final JudgmentEventTransformerService judgmentEventTransformerService;
+    private final JudgmentRepository judgmentRepository;
 
     @Autowired
     public JudgmentEventService(JudgmentEventValidatorService judgmentEventValidatorService,
                                 RefDataService refDataService,
-                                JudgmentEventTransformerService judgmentEventTransformerService) {
+                                JudgmentEventTransformerService judgmentEventTransformerService,
+                                JudgmentRepository judgmentRepository) {
         this.judgmentEventValidatorService = judgmentEventValidatorService;
         this.refDataService = refDataService;
         this.judgmentEventTransformerService = judgmentEventTransformerService;
+        this.judgmentRepository = judgmentRepository;
     }
 
     public void processJudgmentEvent(JudgmentEvent judgmentEvent) {
@@ -38,9 +45,8 @@ public class JudgmentEventService {
         validateJudgmentEvent(judgmentEvent);
 
         String courtLocationCode = getCourtLocationCode(judgmentEvent.getCourtEpimsId());
-        List<Judgment> judgments = transformJudgmentEvent(judgmentEvent, courtLocationCode);
 
-        persistJudgments(judgments);
+        persistJudgmentEvent(judgmentEvent, courtLocationCode);
     }
 
     private void validateJudgmentEvent(JudgmentEvent judgmentEvent) {
@@ -69,7 +75,43 @@ public class JudgmentEventService {
         return judgmentEventTransformerService.transformJudgmentEvent(judgmentEvent, courtLocationCode);
     }
 
-    private void persistJudgments(List<Judgment> judgments) {
-        // TODO: complete
+    private void persistJudgmentEvent(JudgmentEvent judgmentEvent, String courtLocationCode) {
+        String serviceId = judgmentEvent.getServiceId();
+        String judgmentId = judgmentEvent.getJudgmentId();
+        LocalDateTime judgmentEventTimestamp = judgmentEvent.getJudgmentEventTimeStamp();
+        String caseNumber = judgmentEvent.getCaseNumber();
+
+        log.debug("Persist judgmentEvent: serviceId [{}], judgmentId [{}], timestamp [{}], caseNumber [{}]",
+                  serviceId,
+                  judgmentId,
+                  judgmentEventTimestamp,
+                  caseNumber);
+
+        List<Judgment> judgments = transformJudgmentEvent(judgmentEvent, courtLocationCode);
+
+        List<Judgment> existingJudgments =
+            judgmentRepository.findByEventDetails(serviceId, judgmentId, judgmentEventTimestamp, caseNumber);
+
+        if (existingJudgments.isEmpty()) {
+            log.debug("No existing judgment(s), save judgment event");
+            judgmentRepository.saveAll(judgments);
+        } else {
+            log.debug("Existing judgment(s), check against judgment event");
+            if (existingJudgments.size() == judgments.size()) {
+                int index = 0;
+                Judgment judgment;
+
+                for (Judgment existingJudgment : existingJudgments) {
+                    judgment = judgments.get(index);
+                    if (!existingJudgment.equalsJudgment(judgment)) {
+                        throw new UpdateExistingJudgmentException();
+                    }
+                    index++;
+                }
+                log.debug("Existing judgment(s) match judgment event");
+            } else {
+                throw new DifferentNumberOfDefendantsException();
+            }
+        }
     }
 }

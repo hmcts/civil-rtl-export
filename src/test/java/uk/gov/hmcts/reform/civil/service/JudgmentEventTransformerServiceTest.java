@@ -28,13 +28,13 @@ import static org.mockito.Mockito.when;
 class JudgmentEventTransformerServiceTest {
 
     private static final String SERVICE_ID = "UT01";
-    private static final String JUDGMENT_ID = "200";
+    private static final String JUDGMENT_ID = "1001";
     private static final LocalDateTime JUDGMENT_EVENT_TIMESTAMP = LocalDateTime.of(2024, 11, 19, 1, 0, 0);
-    private static final String COURT_EPIMS_ID = "107635";
+    private static final String COURT_EPIMS_ID = "123456";
     private static final String COURT_CODE = "100";
-    private static final String CCD_CASE_REF = "87654321";
-    private static final String CASE_NUMBER = "B0NN5732";
-    private static final BigDecimal JUDGMENT_ADMIN_ORDER_TOTAL = BigDecimal.valueOf(50.0);
+    private static final String CCD_CASE_REF = "10000001";
+    private static final String CASE_NUMBER = "0AA10001";
+    private static final BigDecimal JUDGMENT_ADMIN_ORDER_TOTAL = new BigDecimal("50.00");
     private static final LocalDate JUDGMENT_ADMIN_ORDER_DATE = LocalDate.of(2024, 11, 18);
     private static final LocalDate CANCELLATION_DATE = LocalDate.of(2024, 11, 17);
     private static final String DEFENDANT_1_PREFIX = "Def1";

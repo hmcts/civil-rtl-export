@@ -40,6 +40,20 @@ class RestExceptionHandlerTest {
         assertResponse(response, "004", "missing cancellation date");
     }
 
+    @Test
+    void testHandleUpdateExistingJudgmentException() {
+        UpdateExistingJudgmentException exception = new UpdateExistingJudgmentException();
+        ResponseEntity<Object> response = restExceptionHandler.handleUpdateExistingJudgmentException(exception);
+        assertResponse(response, "008", "update of extant record not allowed");
+    }
+
+    @Test
+    void testHandleDifferentNumberOfDefendantsException() {
+        DifferentNumberOfDefendantsException exception = new DifferentNumberOfDefendantsException();
+        ResponseEntity<Object> response = restExceptionHandler.handleDifferentNumberOfDefendantsException(exception);
+        assertResponse(response, "009", "changing number of defendants not allowed");
+    }
+
     private void assertResponse(ResponseEntity<Object> response,
                                 String expectedErrorCode,
                                 String expectedErrorMessage) {

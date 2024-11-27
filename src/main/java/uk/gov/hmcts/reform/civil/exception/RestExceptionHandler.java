@@ -23,6 +23,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return createJudgmentEventErrorResponse("004", "missing cancellation date");
     }
 
+    @ExceptionHandler(value = {UpdateExistingJudgmentException.class})
+    public ResponseEntity<Object> handleUpdateExistingJudgmentException(UpdateExistingJudgmentException e) {
+        return createJudgmentEventErrorResponse("008", "update of extant record not allowed");
+    }
+
+    @ExceptionHandler(value = {DifferentNumberOfDefendantsException.class})
+    public ResponseEntity<Object> handleDifferentNumberOfDefendantsException(DifferentNumberOfDefendantsException e) {
+        return createJudgmentEventErrorResponse("009", "changing number of defendants not allowed");
+    }
+
     private ResponseEntity<Object> createJudgmentEventErrorResponse(String errorCode, String errorMessage) {
         JudgmentEventError judgmentEventError = new JudgmentEventError(errorCode, errorMessage);
         return ResponseEntity.badRequest().body(judgmentEventError);

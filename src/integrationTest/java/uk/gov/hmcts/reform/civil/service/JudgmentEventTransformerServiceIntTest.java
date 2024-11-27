@@ -34,12 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class JudgmentEventTransformerServiceIntTest {
 
     private static final String SERVICE_ID = "IT01";
-    private static final String JUDGMENT_ID = "200";
+    private static final String JUDGMENT_ID = "1001";
     private static final LocalDateTime JUDGMENT_EVENT_TIMESTAMP = LocalDateTime.of(2024, 11, 20, 12, 0, 0);
     private static final String COURT_CODE = "128";
-    private static final String CCD_CASE_REF = "87654321";
-    private static final String CASE_NUMBER = "B0NN5732";
-    private static final BigDecimal JUDGMENT_ADMIN_ORDER_TOTAL = BigDecimal.valueOf(23.10);
+    private static final String CCD_CASE_REF = "10000001";
+    private static final String CASE_NUMBER = "0AA10001";
+    private static final BigDecimal JUDGMENT_ADMIN_ORDER_TOTAL = new BigDecimal("23.10");
     private static final LocalDate JUDGMENT_ADMIN_ORDER_DATE = LocalDate.of(2024, 11, 1);
     private static final String DEFENDANT_1_PREFIX = "DEF1";
     private static final String DEFENDANT_2_PREFIX = "DEF2";
@@ -119,7 +119,7 @@ class JudgmentEventTransformerServiceIntTest {
         judgmentEvent.setServiceId(SERVICE_ID);
         judgmentEvent.setJudgmentId(JUDGMENT_ID);
         judgmentEvent.setJudgmentEventTimeStamp(JUDGMENT_EVENT_TIMESTAMP);
-        judgmentEvent.setCourtEpimsId("107635");
+        judgmentEvent.setCourtEpimsId("123456");
         judgmentEvent.setCcdCaseRef(CCD_CASE_REF);
         judgmentEvent.setCaseNumber(CASE_NUMBER);
         judgmentEvent.setJudgmentAdminOrderTotal(JUDGMENT_ADMIN_ORDER_TOTAL);

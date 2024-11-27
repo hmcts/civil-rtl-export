@@ -64,7 +64,7 @@ class JudgmentTest {
             arguments(named("ccdCaseRef", createJudgmentCcdCaseRef("ccd_ref_2"))),
             arguments(named("caseNumber", createJudgmentCaseNumber("casenum2"))),
             arguments(named("judgmentAdminOrderTotal",
-                            createJudgmentJudgmentAdminOrderTotal(BigDecimal.valueOf(2.0))))),
+                            createJudgmentJudgmentAdminOrderTotal(new BigDecimal("2.00"))))),
             arguments(named("judgmentAdminOrderDate", createJudgmentJudgmentAdminOrderDate(LocalDate.of(2024, 10, 2)))),
             arguments(named("registrationType",
                             createJudgmentRegistrationType(RegistrationType.JUDGMENT_SATISFIED.getRegType()))),
@@ -228,7 +228,7 @@ class JudgmentTest {
         judgment.setCourtCode("100");
         judgment.setCcdCaseRef("ccd_ref_1");
         judgment.setCaseNumber("casenum1");
-        judgment.setJudgmentAdminOrderTotal(BigDecimal.valueOf(1.0));
+        judgment.setJudgmentAdminOrderTotal(new BigDecimal("1.00"));
         judgment.setJudgmentAdminOrderDate(LocalDate.of(2024, 10, 1));
         judgment.setRegistrationType(RegistrationType.JUDGMENT_CANCELLED.getRegType());
         judgment.setCancellationDate(LocalDate.of(2024, 9, 1));

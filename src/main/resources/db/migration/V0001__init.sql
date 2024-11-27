@@ -60,7 +60,7 @@ ALTER TABLE judgments ADD CONSTRAINT j_def_add_pos_nn CHECK (defendant_address_p
 ------------------------------------------------
 -- Create Unique constraints for PUBLIC
 ------------------------------------------------
-ALTER TABLE judgments ADD CONSTRAINT j_ser_id_jud_id_uni UNIQUE (service_id, judgment_id);
+ALTER TABLE judgments ADD CONSTRAINT j_jud_eve_uni UNIQUE (service_id, judgment_id, judgment_event_timestamp, case_number);
 
 
 ------------------------------------------------
