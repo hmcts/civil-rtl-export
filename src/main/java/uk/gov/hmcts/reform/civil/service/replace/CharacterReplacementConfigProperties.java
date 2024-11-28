@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix = "replace")
+@ConfigurationProperties(prefix = "rtl-export.replace")
 @Getter
 @Setter
 public class CharacterReplacementConfigProperties {

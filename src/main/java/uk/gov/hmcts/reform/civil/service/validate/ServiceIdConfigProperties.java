@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix = "validate")
+@ConfigurationProperties(prefix = "rtl-export.validate")
 @Getter
 @Setter
 public class ServiceIdConfigProperties {
