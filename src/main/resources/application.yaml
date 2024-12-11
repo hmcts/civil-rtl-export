@@ -53,6 +53,22 @@ spring:
     baseline-version: '0001'
     out-of-order: 'true'
     baseline-on-migrate: 'true'
+  security:
+    oauth2:
+      client:
+        registration:
+          rd-location:
+            authorization-grant-type: password
+            client-id: civil_rtl_export
+            client-secret: ${IDAM_RTL_EXPORT_CLIENT_SECRET:civil_rtl_export_secret}
+            client-authorization-method: client_secret_post
+            scope:
+              - openid
+              - profile
+              - roles
+        provider:
+          rd-location:
+            token-uri: ${IDAM_API_URL:http://localhost:5000}/o/token
 
 feign:
   circuitbreaker:
@@ -65,27 +81,28 @@ feign:
         loggerLevel: BASIC
       postFeignClient:
         loggerLevel: FULL
-#idam:
+
+idam:
 #  s2s-authorised:
-#    services: ${CIVIL_SDT_S2S_AUTHORISED_SERVICES:civil_sdt}
-#  s2s-auth:
-#    microservice: civil_sdt
-#    totp_secret: ${CIVIL_SDT_S2S_KEY:AAAAAAAAAAAAAAAA}
-#    url: ${IDAM_S2S_URL:http://localhost:4502}
-#  sdt:
-#    username: ${IDAM_SDT_USERNAME:master.sdt@gmail.com}
-#    password: ${IDAM_SDT_PASSWORD:Pa55word11}
-#  api:
-#    url: ${IDAM_API_URL:http://localhost:5000}
-#  client:
-#    id: civil_sdt
-#    secret: ${IDAM_SDT_CLIENT_SECRET:civil_sdt_secret}
-#    scope: openid profile roles
-#    # The redirect_uri property is not used by SDT.  Included as required by IDAM for token generation.
-#    redirect_uri: http://civil-sdt/oauth2redirect
-#civil:
-#  api:
-#    url: ${CIVIL_API_URL:http://localhost:5000}
+#    services: ${CIVIL_RTL_EXPORT_S2S_AUTHORISED_SERVICES:civil_rtl_export}
+  s2s-auth:
+    microservice: civil_rtl_export
+    totp_secret: ${CIVIL_RTL_EXPORT_S2S_KEY:AAAAAAAAAAAAAAAA}
+    url: ${IDAM_S2S_URL:http://localhost:4502}
+    endpoint-regex: /refdata/location/court-venues.*
+  legacy:
+    password-grant:
+      registration-reference: rd-location
+      endpoint-regex: /refdata/location/court-venues.*
+      service-account:
+         email-address: ${IDAM_RTL_EXPORT_USERNAME:master.rtl_export@gmail.com}
+         password: ${IDAM_RTL_EXPORT_PASSWORD:Pa55word11}
+  api:
+    url: ${IDAM_API_URL:http://localhost:5000}
+
+ref-data:
+  location:
+    url: ${LOCATION_REF_DATA_URL:http://localhost:8991}
 
 rtl-export:
   validate:

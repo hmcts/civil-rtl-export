@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.civil.WireMockIntTestBase;
 
 import java.io.UnsupportedEncodingException;
 
@@ -24,13 +25,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("itest")
 @Sql(scripts = {"judgment_event_controller_int_test.sql"})
 @Transactional
-class JudgmentEventControllerIntTest {
+class JudgmentEventControllerIntTest extends WireMockIntTestBase {
 
     private static final String ENDPOINT_JUDGMENT = "/judgment";
+
+    private static final String COURT_EPIMS_ID = "123456";
+    private static final String COURT_EPIMS_ID_UNRECOGNISED = "999999";
 
     private static final int HTTP_STATUS_CREATED = 201;
     private static final int HTTP_STATUS_BAD_REQUEST = 400;
@@ -50,6 +54,9 @@ class JudgmentEventControllerIntTest {
 
     @Test
     void testNoExistingJudgmentEvent() throws Exception {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         String judgmentEvent = """
             {
               "serviceId": "IT01",
@@ -105,6 +112,9 @@ class JudgmentEventControllerIntTest {
 
     @Test
     void testUnrecognisedEpimsId() throws Exception {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseNotFound(COURT_EPIMS_ID_UNRECOGNISED);
+
         String judgmentEvent = """
             {
               "serviceId": "IT01",
@@ -163,6 +173,9 @@ class JudgmentEventControllerIntTest {
 
     @Test
     void testUpdateExistingJudgment() throws Exception {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         String judgmentEvent = """
             {
               "serviceId": "IT01",
@@ -192,6 +205,9 @@ class JudgmentEventControllerIntTest {
 
     @Test
     void testDifferentNumberOfDefendants() throws Exception {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         String judgmentEvent = """
             {
               "serviceId": "IT01",
@@ -228,6 +244,9 @@ class JudgmentEventControllerIntTest {
 
     @Test
     void testDuplicateJudgment() throws Exception {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         String judgmentEvent = """
             {
               "serviceId": "IT01",

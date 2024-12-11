@@ -72,7 +72,7 @@ class JudgmentEventTransformerServiceTest {
             .transformJudgmentEvent(createJudgmentEventMandatoryFieldsOnly(), COURT_CODE);
         assertNumberOfJudgments(1, judgments);
 
-        Judgment judgment = judgments.get(0);
+        Judgment judgment = judgments.getFirst();
         assertEquals(SERVICE_ID, judgment.getServiceId(), "Unexpected ServiceId");
         assertEquals(JUDGMENT_ID + JUDGMENT_ID_SUFFIX_1, judgment.getJudgmentId(), "Unexpected JudgmentId");
         assertEquals(JUDGMENT_EVENT_TIMESTAMP,
@@ -117,7 +117,7 @@ class JudgmentEventTransformerServiceTest {
             judgmentEventTransformerService.transformJudgmentEvent(createJudgmentEventOneDefendant(), COURT_CODE);
 
         assertNumberOfJudgments(1, judgments);
-        assertJudgment(judgments.get(0),
+        assertJudgment(judgments.getFirst(),
                        JUDGMENT_ID_SUFFIX_1,
                        DEFENDANT_1_PREFIX,
                        DEFENDANT_1_POSTCODE,

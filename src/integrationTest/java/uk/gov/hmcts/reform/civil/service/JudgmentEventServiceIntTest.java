@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.civil.WireMockIntTestBase;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
 import uk.gov.hmcts.reform.civil.exception.DifferentNumberOfDefendantsException;
 import uk.gov.hmcts.reform.civil.exception.MissingCancellationDateException;
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ActiveProfiles("itest")
 @Sql(scripts = {"judgment_event_service_int_test.sql"})
 @Transactional
-class JudgmentEventServiceIntTest {
+class JudgmentEventServiceIntTest extends WireMockIntTestBase {
 
     private static final String SERVICE_ID = "IT01";
     private static final String SERVICE_ID_UNRECOGNISED = "IT99";
@@ -89,6 +90,9 @@ class JudgmentEventServiceIntTest {
 
     @Test
     void testProcessJudgmentEventUnrecognisedEpimsId() {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseNotFound(COURT_EPIMS_ID_UNRECOGNISED);
+
         JudgmentEvent judgmentEvent = createJudgmentEventCommon("3003",
                                                                 LocalDateTime.of(2024, 3, 3, 3, 0, 0),
                                                                 "30000003",
@@ -107,6 +111,9 @@ class JudgmentEventServiceIntTest {
 
     @Test
     void testProcessJudgmentEventUpdateExistingOneDefendant() {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         JudgmentEvent judgmentEvent = createJudgmentEvent("4004",
                                                           LocalDateTime.of(2024, 4, 4, 4, 0, 0),
                                                           "40000004",
@@ -123,6 +130,9 @@ class JudgmentEventServiceIntTest {
 
     @Test
     void testProcessJudgmentEventUpdateExistingTwoDefendants() {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         JudgmentEvent judgmentEvent = createJudgmentEvent("5005",
                                                           LocalDateTime.of(2024, 5, 5, 5, 0, 0),
                                                           "50000005",
@@ -140,6 +150,9 @@ class JudgmentEventServiceIntTest {
 
     @Test
     void testProcessJudgmentEventDifferentNumberOfDefendants() {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         JudgmentEvent judgmentEvent = createJudgmentEvent("6006",
                                                           LocalDateTime.of(2024, 6, 6, 6, 0, 0),
                                                           "60000006",
@@ -157,6 +170,9 @@ class JudgmentEventServiceIntTest {
 
     @Test
     void testProcessJudgmentEventDuplicate() {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         String judgmentId = "7007";
         LocalDateTime judgmentEventTimestamp = LocalDateTime.of(2024, 7, 7, 7, 0, 0);
         String caseNumber = "0AA70007";
@@ -187,6 +203,9 @@ class JudgmentEventServiceIntTest {
 
     @Test
     void testProcessJudgmentEventNoExisting() {
+        stubIdamS2SAuthResponseOk();
+        stubRefDataLocationApiResponseOk(COURT_EPIMS_ID);
+
         String judgmentId = "8008";
         LocalDateTime judgmentEventTimestamp = LocalDateTime.of(2024, 8, 8, 8, 0, 0);
         String caseNumber = "0AA80008";

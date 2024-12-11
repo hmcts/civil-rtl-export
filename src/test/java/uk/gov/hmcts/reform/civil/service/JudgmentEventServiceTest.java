@@ -7,6 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
 import uk.gov.hmcts.reform.civil.exception.DifferentNumberOfDefendantsException;
+import uk.gov.hmcts.reform.civil.exception.MissingCancellationDateException;
+import uk.gov.hmcts.reform.civil.exception.UnrecognisedEpimsIdException;
+import uk.gov.hmcts.reform.civil.exception.UnrecognisedServiceIdException;
 import uk.gov.hmcts.reform.civil.exception.UpdateExistingJudgmentException;
 import uk.gov.hmcts.reform.civil.model.Defendant;
 import uk.gov.hmcts.reform.civil.model.DefendantAddress;
@@ -23,6 +26,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,9 +35,11 @@ import static org.mockito.Mockito.when;
 class JudgmentEventServiceTest {
 
     private static final String SERVICE_ID = "UT01";
+    private static final String SERVICE_ID_UNRECOGNISED = "UT99";
     private static final String JUDGMENT_ID = "1001";
     private static final LocalDateTime JUDGMENT_EVENT_TIMESTAMP = LocalDateTime.of(2024, 1, 1, 1, 0, 0);
     private static final String COURT_EPIMS_ID = "123456";
+    private static final String COURT_EPIMS_ID_UNRECOGNISED = "999999";
     private static final String COURT_CODE = "101";
     private static final String CCD_CASE_REF = "10000001";
     private static final String CASE_NUMBER = "0AA10001";
@@ -71,6 +77,58 @@ class JudgmentEventServiceTest {
                                                         mockRefDataService,
                                                         mockJudgmentEventTransformerService,
                                                         mockJudgmentRepository);
+    }
+
+    @Test
+    void testProcessJudgmentEventUnrecognisedServiceId() {
+        JudgmentEvent judgmentEvent = new JudgmentEvent();
+        judgmentEvent.setServiceId(SERVICE_ID_UNRECOGNISED);
+
+        UnrecognisedServiceIdException exception = new UnrecognisedServiceIdException();
+        doThrow(exception).when(mockJudgmentEventValidatorService).validateServiceId(SERVICE_ID_UNRECOGNISED);
+
+        assertThrows(UnrecognisedServiceIdException.class,
+                     () -> judgmentEventService.processJudgmentEvent(judgmentEvent),
+                     "UnrecognisedServiceIdException should be thrown");
+
+        verify(mockJudgmentEventValidatorService).validateServiceId(SERVICE_ID_UNRECOGNISED);
+    }
+
+    @Test
+    void testProcessJudgmentEventMissingCancellationDate() {
+        JudgmentEvent judgmentEvent = new JudgmentEvent();
+        judgmentEvent.setServiceId(SERVICE_ID);
+        judgmentEvent.setRegistrationType(RegistrationType.ADMIN_ORDER_REVOKED);
+
+        MissingCancellationDateException exception = new MissingCancellationDateException();
+        doThrow(exception).when(mockJudgmentEventValidatorService)
+            .validateCancellationDate(RegistrationType.ADMIN_ORDER_REVOKED, null);
+
+        assertThrows(MissingCancellationDateException.class,
+                     () -> judgmentEventService.processJudgmentEvent(judgmentEvent),
+                     "MissingCancellationDateException should be thrown");
+
+        verify(mockJudgmentEventValidatorService).validateServiceId(SERVICE_ID);
+        verify(mockJudgmentEventValidatorService).validateCancellationDate(RegistrationType.ADMIN_ORDER_REVOKED, null);
+    }
+
+    @Test
+    void testProcessJudgmentEventUnrecognisedEpimsId() {
+        JudgmentEvent judgmentEvent = new JudgmentEvent();
+        judgmentEvent.setServiceId(SERVICE_ID);
+        judgmentEvent.setRegistrationType(RegistrationType.JUDGMENT_REGISTERED);
+        judgmentEvent.setCourtEpimsId(COURT_EPIMS_ID_UNRECOGNISED);
+
+        UnrecognisedEpimsIdException exception = new UnrecognisedEpimsIdException();
+        when(mockRefDataService.getCourtLocationCode(COURT_EPIMS_ID_UNRECOGNISED)).thenThrow(exception);
+
+        assertThrows(UnrecognisedEpimsIdException.class,
+                     () -> judgmentEventService.processJudgmentEvent(judgmentEvent),
+                     "UnrecognisedEpimsIdException should be thrown");
+
+        verify(mockJudgmentEventValidatorService).validateServiceId(SERVICE_ID);
+        verify(mockJudgmentEventValidatorService).validateCancellationDate(RegistrationType.JUDGMENT_REGISTERED, null);
+        verify(mockRefDataService).getCourtLocationCode(COURT_EPIMS_ID_UNRECOGNISED);
     }
 
     @Test

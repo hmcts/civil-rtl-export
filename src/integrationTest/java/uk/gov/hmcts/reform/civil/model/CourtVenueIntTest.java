@@ -26,7 +26,10 @@ class CourtVenueIntTest {
 
     private CourtVenue createExpectedCourtVenue() {
         CourtVenue courtVenue = new CourtVenue();
+        courtVenue.setEpimsId("456789");
+        courtVenue.setCourtTypeId(10);
         courtVenue.setCourtLocationCode("100");
+        courtVenue.setIsCaseManagementLocation("Y");
         return courtVenue;
     }
 }
