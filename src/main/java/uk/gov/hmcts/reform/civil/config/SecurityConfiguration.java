@@ -14,6 +14,7 @@ public class SecurityConfiguration {
 
     private static final String[] ALLOWED_LIST = {
         "/health",
+        "/health/liveness",
         "/"
     };
 
