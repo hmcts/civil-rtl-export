@@ -83,8 +83,8 @@ feign:
         loggerLevel: FULL
 
 idam:
-#  s2s-authorised:
-#    services: ${CIVIL_RTL_EXPORT_S2S_AUTHORISED_SERVICES:civil_rtl_export}
+  s2s-authorised:
+    services: ${CIVIL_RTL_EXPORT_S2S_AUTHORISED_SERVICES:civil_rtl_export}
   s2s-auth:
     microservice: civil_rtl_export
     totp_secret: ${CIVIL_RTL_EXPORT_S2S_KEY:AAAAAAAAAAAAAAAA}
