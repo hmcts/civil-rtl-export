@@ -1,5 +1,5 @@
 FROM postgres:15
-USER hmcts
+USER postgres
 
 COPY init-db.sh /docker-entrypoint-initdb.d
 
