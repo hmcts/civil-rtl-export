@@ -20,6 +20,7 @@ public class SecurityConfiguration {
     private static final String[] SERVICE_AUTH_EXCLUDE_LIST = {
         "/health",
         "/health/liveness",
+        "/health/readiness",
         "/"
     };
 
