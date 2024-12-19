@@ -1,0 +1,18 @@
+{
+  "serviceId": "AAA3",
+  "judgmentId": "1001",
+  "judgmentEventTimeStamp": "2024-11-14T09:04:01Z",
+  "courtEpimsId": "123456",
+  "ccdCaseRef": "10000001",
+  "caseNumber": "0AA10001",
+  "judgmentAdminOrderTotal": 150.23,
+  "judgmentAdminOrderDate": "2024-11-13",
+  "registrationType": "R",
+  "defendant1": {
+    "defendantName": "Def1FirstName Def1LastName",
+    "defendantAddress": {
+      "defendantAddressLine1": "Def1 addr line1",
+      "defendantPostcode": "DD1 1DD"
+    }
+  }
+}
