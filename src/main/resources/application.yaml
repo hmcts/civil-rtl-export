@@ -61,7 +61,7 @@ spring:
             authorization-grant-type: password
             client-id: civil_rtl_export
             client-secret: ${IDAM_RTL_EXPORT_CLIENT_SECRET:civil_rtl_export_secret}
-            client-authorization-method: client_secret_post
+            client-authentication-method: client_secret_post
             scope:
               - openid
               - profile
