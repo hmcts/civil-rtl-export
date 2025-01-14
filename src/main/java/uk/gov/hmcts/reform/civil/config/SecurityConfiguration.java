@@ -18,9 +18,16 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private static final String[] SERVICE_AUTH_EXCLUDE_LIST = {
+        "/swagger-resources/**",
+        "/swagger-ui.html",
+        "/swagger-ui/**",
+        "/webjars/**",
+        "/v3/api-docs/**",
+        "/favicon.ico",
         "/health",
         "/health/liveness",
         "/health/readiness",
+        "/info",
         "/"
     };
 
@@ -59,6 +66,4 @@ public class SecurityConfiguration {
 
         return http.build();
     }
-
-    // TODO: Finish this class
 }

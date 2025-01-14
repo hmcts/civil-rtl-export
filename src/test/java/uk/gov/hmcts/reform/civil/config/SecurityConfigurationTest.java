@@ -37,7 +37,19 @@ class SecurityConfigurationTest {
 
     @Test
     void testServiceAuthExcludeFilterChain() throws Exception {
-        String[] authExcludeList = {"/health", "/health/liveness", "/health/readiness", "/"};
+        String[] authExcludeList = {
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/favicon.ico",
+            "/health",
+            "/health/liveness",
+            "/health/readiness",
+            "/info",
+            "/"
+        };
 
         when(mockHttpSecurity.securityMatcher(authExcludeList)).thenReturn(mockHttpSecurity);
         when(mockHttpSecurity.authorizeHttpRequests(any())).thenReturn(mockHttpSecurity);
