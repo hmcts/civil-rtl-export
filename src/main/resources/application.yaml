@@ -86,3 +86,20 @@ feign:
 #civil:
 #  api:
 #    url: ${CIVIL_API_URL:http://localhost:5000}
+
+rtl-export:
+  housekeeping:
+    minimumAge: ${MINIMUM_AGE:90}
+    cron: ${HOUSEKEEPING_SCHEDULE_CRON:0 0 1 * * *}
+  sftp:
+    serverAddress: ${SFTP_HOST:localhost}
+    serverPort: ${SFTP_PORT:22}
+    userName: ${SFTP_USERNAME:sftp}
+    password: ${SFTP_PASSWORD:pass}
+    remoteDirectory: data
+
+
+
+
+
+

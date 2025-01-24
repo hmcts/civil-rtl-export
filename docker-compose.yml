@@ -23,12 +23,18 @@ services:
       - LOGBACK_REQUIRE_ALERT_LEVEL=false
       - LOGBACK_REQUIRE_ERROR_CODE=false
       - JF_DB_HOST=civil-rtl-export-database
+      # Uncomment following line and 5005 port mapping line below to enable remote JVM debugging
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n
     ports:
       - $SERVER_PORT:$SERVER_PORT
+      # Uncomment following line and JAVA_TOOL_OPTIONS line above to enable remote JVM debugging
+      - 5005:5005
     depends_on:
       - civil-rtl-export-database
+      - civil-rtl-export-sftp
     links:
       - civil-rtl-export-database
+      - civil-rtl-export-sftp
   civil-rtl-export-database:
     build:
       context: docker/database
@@ -46,5 +52,18 @@ services:
     volumes:
       - civil-rtl-export-database-data:/var/lib/postgresql/data
 
+  civil-rtl-export-sftp:
+    build:
+      context: docker/sftp
+    image: hmcts/civil-rtl-export-sftp
+    command: sftp:pass:1001
+    healthcheck:
+      retries: 10
+    ports:
+      - "2222:22"
+    volumes:
+      - ./docker/sftp/data:/home/sftp/data
+
 volumes:
   civil-rtl-export-database-data:
+
