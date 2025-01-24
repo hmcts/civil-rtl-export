@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
-import uk.gov.hmcts.reform.civil.repository.JudgmentRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,14 +28,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class JudgmentFileServiceTest {
+
     private JudgmentFileService judgmentFileService;
+
     @Mock
     private SftpService sftpService;
-    @Mock
-    private JudgmentRepository judgmentRepository;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -57,34 +55,28 @@ class JudgmentFileServiceTest {
 
     @Test
     void shouldCreateAndSendFilesForValidJudgments() {
-        // Service ID, asOf value and mock judgments set
         final String serviceId = "service1";
         final LocalDateTime asOf = null;
         final boolean test = false;
         Judgment judgment1 = new Judgment();
         Judgment judgment2 = new Judgment();
 
-        // Call admin order date method on judgments
         judgment1.setJudgmentAdminOrderDate(LocalDate.now());
         judgment2.setJudgmentAdminOrderDate(LocalDate.now());
 
-        // Mocks the list of the two judgments returned when the file is created and sent
         List<Judgment> judgments = List.of(judgment1, judgment2);
 
-        // Mocks SFTP service to return true if any file is successfully uploaded
         when(sftpService.uploadFile(any(File.class))).thenReturn(true);
 
         judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
-        // Verifying that SFTP service uploaded the 2 judgment files
         verify(sftpService, times(2)).uploadFile(any(File.class));
     }
 
     @Test
-    void shouldDeleteFilesAfterUpload() throws IOException {
+    void shouldDeleteFilesAfterUpload() {
         final String serviceId = "service1";
         final LocalDateTime asOf = LocalDateTime.now();
-        // Test mode set to false to trigger the file upload and deletion
         final boolean test = false;
 
         Judgment judgment1 = new Judgment();
@@ -93,10 +85,8 @@ class JudgmentFileServiceTest {
         judgment1.setJudgmentAdminOrderDate(LocalDate.now());
         judgment2.setJudgmentAdminOrderDate(LocalDate.now());
 
-        // Mocks the list of the two judgments returned when the file is created and sent
         List<Judgment> judgments = List.of(judgment1, judgment2);
 
-        // Temporary directory for where files will be saved
         File tmpDirFile = judgmentFileService.getTmpDirectory();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
@@ -110,37 +100,30 @@ class JudgmentFileServiceTest {
 
         judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
-        // Asserting the temporary file is deleted
         assertFalse(detailsFile.exists(), "The data file should have been deleted after upload");
         assertFalse(headerFile.exists(), "The header file should have been deleted after upload");
 
         tmpDirFile.deleteOnExit();
     }
 
-
     @Test
     void shouldFormatJudgmentsCorrectlyInDataFile() throws IOException {
-        // Mock creation of two judgments
         Judgment judgment1 = mock(Judgment.class);
         Judgment judgment2 = mock(Judgment.class);
 
-        // Formatting the strings of the mock judgments
         when(judgment1.toFormattedString()).thenReturn("JUDGMENT_1");
         when(judgment2.toFormattedString()).thenReturn("JUDGMENT_2");
 
         LocalDateTime asOf = LocalDateTime.now();
         String serviceId = "service1";
 
-        // Mock generation of the data file content using the list of both judgments
         judgmentFileService.createAndSendJudgmentFile(List.of(judgment1, judgment2), asOf, serviceId, true);
-
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         String formattedDate = asOf.format(formatter);
         String detailsFileName = String.format("judgment-%s-%s.%s", formattedDate, serviceId, "det");
         String headerFileName = String.format("judgment-%s-%s.%s", formattedDate, serviceId, "hdr");
 
-        // Temporary directory for where files will be saved
         File tmpDirFile = judgmentFileService.getTmpDirectory();
 
         Path detailsFilePath = Paths.get(tmpDirFile.getAbsolutePath(), detailsFileName);
@@ -164,7 +147,6 @@ class JudgmentFileServiceTest {
             Files.delete(detailsFilePath);
             Files.delete(headerFilePath);
         }
-
     }
 
     @Test
@@ -181,10 +163,8 @@ class JudgmentFileServiceTest {
 
         judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
-        // Verify that no files are uploaded in test mode
         verify(sftpService, never()).uploadFile(any(File.class));
 
-        // Verify that files are still created but not uploaded
         File tmpDirFile = judgmentFileService.getTmpDirectory();
         String formattedDate = asOf.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
         File detailsFile = new File(tmpDirFile, String.format("judgment-%s-%s.det", formattedDate, serviceId));
@@ -192,8 +172,5 @@ class JudgmentFileServiceTest {
 
         assertTrue(detailsFile.exists(), "Details file should still be created in test mode");
         assertTrue(headerFile.exists(), "Header file should still be created in test mode");
-
     }
-
-
 }

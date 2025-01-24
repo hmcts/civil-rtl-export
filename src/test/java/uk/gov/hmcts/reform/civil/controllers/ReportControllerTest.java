@@ -32,12 +32,9 @@ class ReportControllerTest {
         boolean test = true;
         String serviceId = "testServiceId";
 
-        //Calls the triggerReport method
         ResponseEntity<String> responseEntity = reportController.triggerReport(asOf, test, serviceId);
 
-        //Asserting the successful processing for serviceId
-        assertEquals("Processing has completed successfully for serviceId: " + serviceId,
-                responseEntity.getBody());
+        assertEquals("Processing has completed successfully for serviceId: " + serviceId, responseEntity.getBody());
         verify(scheduledReportService).generateReport(test, asOf, serviceId);
     }
 }

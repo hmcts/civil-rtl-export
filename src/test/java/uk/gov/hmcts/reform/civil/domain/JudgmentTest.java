@@ -16,7 +16,6 @@ class JudgmentTest {
 
         Judgment judgment = new Judgment();
 
-        //sample test data
         judgment.setCourtCode("123");
         judgment.setCaseNumber("CASE1234");
         judgment.setJudgmentAdminOrderTotal(BigDecimal.valueOf(99999999.99));
@@ -32,7 +31,6 @@ class JudgmentTest {
         judgment.setDefendantAddressPostcode("L2B Q5NX");
         judgment.setDefendantDob(LocalDate.of(2024, 10, 22));
 
-        // Expected formatted string
         String expectedOutput = "123"
             + "CASE1234"
             + "99999999.99"
@@ -50,7 +48,6 @@ class JudgmentTest {
 
         String actualOutput = judgment.toFormattedString();
 
-        //asserting that formatted string output matches expected output
         assertEquals(expectedOutput, actualOutput, "toFormattedString does not match expected value");
         assertEquals(LINE_LENGTH, actualOutput.length(), "toFormattedString does not have expected length");
     }
@@ -60,7 +57,6 @@ class JudgmentTest {
 
         Judgment judgment = new Judgment();
 
-        //sample test data
         judgment.setCourtCode("123");
         judgment.setCaseNumber("CASE1234");
         judgment.setJudgmentAdminOrderTotal(BigDecimal.valueOf(0.01));
@@ -76,7 +72,6 @@ class JudgmentTest {
         judgment.setDefendantAddressPostcode("L2B Q5NX");
         judgment.setDefendantDob(null);
 
-        // Expected formatted string
         String expectedOutput = "123"
             + "CASE1234"
             + "00000000.01"
@@ -94,7 +89,6 @@ class JudgmentTest {
 
         String actualOutput = judgment.toFormattedString();
 
-        //asserting that formatted string output matches expected output
         assertEquals(expectedOutput, actualOutput, "toFormattedString does not match expected value");
         assertEquals(LINE_LENGTH, actualOutput.length(), "toFormattedString does not have expected length");
     }
@@ -104,7 +98,6 @@ class JudgmentTest {
 
         Judgment judgment = new Judgment();
 
-        //sample test data
         judgment.setCourtCode("123");
         judgment.setCaseNumber("CASE1234");
         judgment.setJudgmentAdminOrderTotal(BigDecimal.valueOf(0.01));
@@ -120,7 +113,6 @@ class JudgmentTest {
         judgment.setDefendantAddressPostcode("L2B Q5NX");
         judgment.setDefendantDob(null);
 
-        // Expected formatted string
         String expectedOutput = "123"
             + "CASE1234"
             + "00000000.01"
@@ -138,10 +130,7 @@ class JudgmentTest {
 
         String actualOutput = judgment.toFormattedString();
 
-        //asserting that formatted string output matches expected output
         assertEquals(expectedOutput, actualOutput, "toFormattedString does not match expected value");
         assertEquals(LINE_LENGTH, actualOutput.length(), "toFormattedString does not have expected length");
     }
-
-
 }
