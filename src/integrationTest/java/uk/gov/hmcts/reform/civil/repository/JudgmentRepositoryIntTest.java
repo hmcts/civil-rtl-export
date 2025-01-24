@@ -16,60 +16,53 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/*
- * unit tests for JudgmentRepository class
- */
-
 @DataJpaTest
-@ActiveProfiles("itest") // Specifies the active profile for the test
+@ActiveProfiles("itest")
 @Sql(scripts = {"test.sql"})
 class JudgmentRepositoryIntTest {
 
-    @Autowired
-    private JudgmentRepository judgmentRepository;
+    private final JudgmentRepository judgmentRepository;
 
-    @Test // Test for findForUpdate method
+    @Autowired
+    public JudgmentRepositoryIntTest(JudgmentRepository judgmentRepository) {
+        this.judgmentRepository = judgmentRepository;
+    }
+
+    @Test
     void testFindForUpdateWithRerunAndAsOf() {
         LocalDateTime asOf = LocalDateTime.of(2024, 11, 1, 12, 0);
         List<Judgment> results = judgmentRepository.findForUpdate(true, asOf, "Sid1");
 
-        // Assert that we get the expected result
-        assertThat(results).hasSize(1); // Expecting 1 judgment
-        assertThat(results.get(0).getServiceId()).isEqualTo("Sid1"); // Validate service ID
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).getServiceId()).isEqualTo("Sid1");
     }
 
-    @Test // Test for findForUpdate method when judgment is not due for rerun
+    @Test
     void testFindForUpdateWithoutRerun() {
-        LocalDateTime asOf = LocalDateTime.now().minusDays(1); // Past date (minus 1 day)
+        LocalDateTime asOf = LocalDateTime.now().minusDays(1);
         List<Judgment> results = judgmentRepository.findForUpdate(false, asOf, "Sid2");
 
-        // Assert that we get no results
-        assertThat(results).isEmpty(); // Expecting no judgment
+        assertThat(results).isEmpty();
     }
 
-    @Test // Test for findActiveServiceIds method
+    @Test
     void testFindActiveServiceIds() {
         List<String> activeServiceIds = judgmentRepository.findActiveServiceIds();
 
-        // Assert that the active service IDs contain our test service ID
-        assertThat(activeServiceIds).contains("Sid3"); // Should include Sid1
+        assertThat(activeServiceIds).contains("Sid3");
     }
 
-    @Test // Test for findActiveServiceIds when there are no unreported judgments
+    @Test
     void testFindActiveServiceIdsNoUnreportedJudgments() {
-        // Remove all judgments
         judgmentRepository.deleteAll();
 
-        // Retrieve active service IDs
         List<String> activeServiceIds = judgmentRepository.findActiveServiceIds();
 
-        // Assert that there are no active service IDs
-        assertThat(activeServiceIds).isEmpty(); // Expecting an empty list
+        assertThat(activeServiceIds).isEmpty();
     }
 
     @Test
     void testDeleteJudgmentsBefore() {
-
         boolean doesJudgmentExistBefore = judgmentRepository.existsById(6L);
         assertTrue(doesJudgmentExistBefore, "Judgment of 91 days should exist before deletion");
 

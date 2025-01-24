@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 @SpringBootTest
 @ActiveProfiles("itest")
-@Sql(scripts = {"classpath:uk/gov/hmcts/reform/civil/repository/HousekeepingTest.sql"})
-public class HousekeepingServiceIntTest {
+@Sql(scripts = {"HousekeepingTest.sql"})
+class HousekeepingServiceIntTest {
 
     private final JudgmentRepository judgmentRepository;
 
@@ -34,24 +34,15 @@ public class HousekeepingServiceIntTest {
 
     @Test
     void testCheckForOldJudgments() {
-        //Judgments set before housekeeping service is called
-        //4 judgments within the sql script
         long initialRowCount = judgmentRepository.count();
 
         assertEquals(4L, initialRowCount, "Initial data is expected to have 4 rows");
 
-        //Housekeeping service is run to delete old judgments
         housekeepingService.deleteOldJudgments();
 
-        //After the service is run, 2 rows are expected to remain
         long finalRowCount = judgmentRepository.count();
+        assertEquals(3L, finalRowCount, "After the service has completed, 3 judgments should remain");
 
-        assertEquals(3L, finalRowCount, "After the service has completed, "
-            + "3 judgments should remain");
-
-        //Checking to see the status of the specific judgment rows
-        //The judgments which are 90 days and 91 days old should be deleted
-        //The judgment which is 89 days old and the judgment with a null reportedToRtl should remain
         boolean checkJudgment91daysDeleted = judgmentRepository.existsById(1L);
         boolean checkJudgment90daysDeleted = judgmentRepository.existsById(2L);
         boolean checkJudgment89DaysRetained = judgmentRepository.existsById(3L);
@@ -62,5 +53,4 @@ public class HousekeepingServiceIntTest {
         assertTrue(checkJudgment89DaysRetained, "Judgment 89 days old should remain");
         assertTrue(checkNullRtlJudgmentRetained, "Judgment with null reportedToRtl should remain");
     }
-
 }
