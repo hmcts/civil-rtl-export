@@ -89,7 +89,6 @@ public class Judgment {
     @Column(name = "REPORTED_TO_RTL")
     private LocalDateTime reportedToRtl;
 
-    // toString Method
     @Override
     public String toString() {
         return "Judgments[" + "id=" + id
@@ -116,35 +115,25 @@ public class Judgment {
                 + "]";
     }
 
-    //method to generate date formatted string
     public String toFormattedString() {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
-        //converting judgment objects into formatted strings according to the specified RTL Output File Format
+
         return String.join("",
-                //left pad courtCode to 3 characters
-                courtCode,
-                //right pad caseNumber to 8 characters
-                caseNumber,
-                //left pad judgmentAdminOrderTotal to 11 characters with zeros "decimal(8.2)"
-                StringUtils.leftPad(String.format("%08.2f", judgmentAdminOrderTotal), 11, '0'),
-                //format judgmentAdminOrderDate to DDMMYYYY, left padded to 8 characters
-                judgmentAdminOrderDate.format(dateTimeFormatter),
-                //***** no padding, 1 character
-                registrationType,
-                //format cancellationDate to DDMMYYYY, or right pad with spaces if null
-                cancellationDate != null ? cancellationDate.format(dateTimeFormatter) : StringUtils.rightPad("",8),
-                //right pad defendantName to 70 characters
-                StringUtils.rightPad(defendantName, 70),
-                //right padding defendant address lines to 35 characters
-                StringUtils.rightPad(defendantAddressLine1, 35),
-                formattedAddressLine(defendantAddressLine2),
-                formattedAddressLine(defendantAddressLine3),
-                formattedAddressLine(defendantAddressLine4),
-                formattedAddressLine(defendantAddressLine5),
-                //right pad defendantAddressPostCode to 8 characters
-                StringUtils.rightPad(defendantAddressPostcode, 8),
-                //format defendantDob to DDMMYYYY or right padded with spaces if null
-                defendantDob != null ? defendantDob.format(dateTimeFormatter) : StringUtils.rightPad("", 8)
+                           courtCode,
+                           caseNumber,
+                           StringUtils.leftPad(String.format("%08.2f", judgmentAdminOrderTotal), 11, '0'),
+                           judgmentAdminOrderDate.format(dateTimeFormatter),
+                           registrationType,
+                           cancellationDate != null ? cancellationDate.format(dateTimeFormatter) :
+                               StringUtils.rightPad("", 8),
+                           StringUtils.rightPad(defendantName, 70),
+                           StringUtils.rightPad(defendantAddressLine1, 35),
+                           formattedAddressLine(defendantAddressLine2),
+                           formattedAddressLine(defendantAddressLine3),
+                           formattedAddressLine(defendantAddressLine4),
+                           formattedAddressLine(defendantAddressLine5),
+                           StringUtils.rightPad(defendantAddressPostcode, 8),
+                           defendantDob != null ? defendantDob.format(dateTimeFormatter) : StringUtils.rightPad("", 8)
         );
     }
 
