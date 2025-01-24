@@ -97,9 +97,3 @@ rtl-export:
     userName: ${SFTP_USERNAME:sftp}
     password: ${SFTP_PASSWORD:pass}
     remoteDirectory: data
-
-
-
-
-
-
