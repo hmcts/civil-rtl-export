@@ -23,3 +23,6 @@ bin/main/application.yaml
 
 applicationinsights-agent-*.jar
 *.log
+
+docker/sftp/data/*.hdr
+docker/sftp/data/*.det
