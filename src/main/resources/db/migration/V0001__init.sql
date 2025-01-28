@@ -12,7 +12,7 @@ judgment_event_timestamp TIMESTAMP(2),
 court_code VARCHAR(3),
 ccd_case_ref VARCHAR(16),
 case_number VARCHAR(8),
-judgment_admin_order_total NUMERIC(8,2),
+judgment_admin_order_total NUMERIC(10,2),
 judgment_admin_order_date DATE,
 registration_type VARCHAR(1),
 cancellation_date DATE,
@@ -60,7 +60,7 @@ ALTER TABLE judgments ADD CONSTRAINT j_def_add_pos_nn CHECK (defendant_address_p
 ------------------------------------------------
 -- Create Unique constraints for PUBLIC
 ------------------------------------------------
-ALTER TABLE judgments ADD CONSTRAINT j_ser_id_jud_id_uni UNIQUE (service_id, judgment_id);
+ALTER TABLE judgments ADD CONSTRAINT j_jud_eve_uni UNIQUE (service_id, judgment_id, judgment_event_timestamp, case_number);
 
 
 ------------------------------------------------

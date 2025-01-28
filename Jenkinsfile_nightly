@@ -11,4 +11,13 @@ def type = "java"
 def product = "civil"
 def component = "rtl-export"
 
-withNightlyPipeline(type, product, component) {}
+// Prevent Docker hub rate limit errors by ensuring that testcontainers uses images from hmctspublic ACR
+env.TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX = "hmctspublic.azurecr.io/imported/"
+
+withNightlyPipeline(type, product, component) {
+  enableFortifyScan()
+
+  afterAlways('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
+}

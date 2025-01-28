@@ -15,7 +15,6 @@ module "civil_rtl_export_key_vault" {
   common_tags                 = local.tags
   managed_identity_object_ids = [data.azurerm_user_assigned_identity.civil-mi.principal_id]
 }
-/* These key vault secrets will be re-instated once the service has been set up in IDAM
 
 data "azurerm_key_vault" "s2s_vault" {
   name                = "s2s-${var.env}"
@@ -32,4 +31,3 @@ resource "azurerm_key_vault_secret" "s2s" {
   value        = data.azurerm_key_vault_secret.key_from_vault.value
   key_vault_id = module.civil_rtl_export_key_vault.key_vault_id
 }
-*/
