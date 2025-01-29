@@ -93,8 +93,10 @@ rtl-export:
     minimumAge: ${MINIMUM_AGE:90}
     cron: ${HOUSEKEEPING_SCHEDULE_CRON:0 0 1 * * *}
   sftp:
-    serverAddress: ${SFTP_HOST:localhost}
+    host: ${SFTP_HOST:civil-rtl-export-sftp}
     serverPort: ${SFTP_PORT:22}
     userName: ${SFTP_USERNAME:sftp}
     password: ${SFTP_PASSWORD:pass}
-    remoteDirectory: data
+    remoteDir: ${SFTP_REMOTE_DIR:data}
+    connectTimeout: ${SFTP_CONNECT_TIMEOUT:10000}
+    authTimeout: ${SFTP_AUTH_TIMEOUT:10000}

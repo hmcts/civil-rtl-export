@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
+import uk.gov.hmcts.reform.civil.service.sftp.SftpService;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +24,9 @@ import java.util.List;
 public class JudgmentFileService {
 
     private static final String TEMP_DIR = "judgment-files";
+
+    private static final String FILE_EXTENSION_HEADER = "hdr";
+    private static final String FILE_EXTENSION_DETAILS = "det";
 
     private final SftpService sftpService;
 
@@ -40,25 +45,25 @@ public class JudgmentFileService {
         if (!judgments.isEmpty()) {
 
             String dataFileContent = generateDataFileContent(judgments);
-            File dataFile = saveToFile(dataFileContent, serviceId, asOf, "det");
+            File dataFile = saveToFile(dataFileContent, serviceId, asOf, FILE_EXTENSION_DETAILS);
 
             String headerFileContent = generateHeaderFileContent(judgments.size(), asOf);
-            File headerFile = saveToFile(headerFileContent, serviceId, asOf, "hdr");
+            File headerFile = saveToFile(headerFileContent, serviceId, asOf, FILE_EXTENSION_HEADER);
 
             if (!test) {
                 log.info("Test mode is OFF. Transferring files to server via SFTP.");
 
-                boolean dataFileUpload = sftpService.uploadFile(dataFile);
-                boolean headerFileUpload = sftpService.uploadFile(headerFile);
+                List<File> dataFiles = new ArrayList<>();
+                dataFiles.add(dataFile);
+                dataFiles.add(headerFile);
 
-                if (dataFileUpload && headerFileUpload) {
-                    if (!dataFile.delete()) {
-                        throw new IllegalStateException("Failed to delete data file: " + dataFile.getAbsolutePath());
-                    }
-                    if (!headerFile.delete()) {
-                        throw new IllegalStateException("Failed to delete header file: "
-                                                            + headerFile.getAbsolutePath());
-                    }
+                sftpService.uploadFiles(dataFiles);
+
+                if (!dataFile.delete()) {
+                    throw new IllegalStateException("Failed to delete data file: " + dataFile.getAbsolutePath());
+                }
+                if (!headerFile.delete()) {
+                    throw new IllegalStateException("Failed to delete header file: " + headerFile.getAbsolutePath());
                 }
             } else {
                 log.info("Test mode is ON. Files will not be transferred to the server");

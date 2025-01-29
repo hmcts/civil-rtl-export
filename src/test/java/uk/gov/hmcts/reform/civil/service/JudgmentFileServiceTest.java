@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
+import uk.gov.hmcts.reform.civil.service.sftp.SftpService;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,10 +22,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +50,7 @@ class JudgmentFileServiceTest {
 
         judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
-        verify(sftpService, never()).uploadFile(any(File.class));
+        verify(sftpService, never()).uploadFiles(anyList());
     }
 
     @Test
@@ -66,11 +66,9 @@ class JudgmentFileServiceTest {
 
         List<Judgment> judgments = List.of(judgment1, judgment2);
 
-        when(sftpService.uploadFile(any(File.class))).thenReturn(true);
-
         judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
-        verify(sftpService, times(2)).uploadFile(any(File.class));
+        verify(sftpService).uploadFiles(anyList());
     }
 
     @Test
@@ -94,9 +92,6 @@ class JudgmentFileServiceTest {
 
         File detailsFile = new File(tmpDirFile, String.format("judgment-%s-%s.%s", formattedDate, serviceId, "det"));
         File headerFile = new File(tmpDirFile, String.format("judgment-%s-%s.%s", formattedDate, serviceId, "hdr"));
-
-        when(sftpService.uploadFile(detailsFile)).thenReturn(true);
-        when(sftpService.uploadFile(headerFile)).thenReturn(true);
 
         judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
@@ -163,7 +158,7 @@ class JudgmentFileServiceTest {
 
         judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
-        verify(sftpService, never()).uploadFile(any(File.class));
+        verify(sftpService, never()).uploadFiles(anyList());
 
         File tmpDirFile = judgmentFileService.getTmpDirectory();
         String formattedDate = asOf.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
