@@ -8,6 +8,9 @@ import uk.gov.hmcts.reform.civil.repository.JudgmentRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Slf4j
@@ -41,56 +44,50 @@ public class ScheduledReportService {
         }
 
         log.info("Report generation has started");
+
         if (serviceId == null) {
+            log.debug("Finding judgments for all serviceIds: asOf [{}], rerun [{}], test [{}]", asOf, rerun, test);
+            List<Judgment> judgments = judgmentRepository.findForUpdate(rerun, asOf);
 
-            List<String> activeServiceIds = judgmentRepository.findActiveServiceIds();
+            if (judgments.isEmpty()) {
+                log.info("No judgments found for any serviceId");
+            } else {
+                // Separate judgments out into separate lists by service id
+                Map<String, List<Judgment>> judgmentsGroupedByServiceId =
+                    judgments.stream().collect(groupingBy(Judgment::getServiceId));
 
-            if (activeServiceIds.isEmpty()) {
-                log.warn("No active service IDs were found for processing");
-                return;
+                for (Map.Entry<String, List<Judgment>> judgmentsServiceId : judgmentsGroupedByServiceId.entrySet()) {
+                    processJudgments(judgmentsServiceId.getValue(), judgmentsServiceId.getKey(), asOf, rerun, test);
+                }
             }
 
-            for (String activeServiceId : activeServiceIds) {
-                log.info("Processing serviceId: {}, asOf: {}, rerun: {}, test: {}", activeServiceId, asOf, rerun, test);
-                processServiceId(activeServiceId, asOf, rerun, test);
-            }
         } else {
-            log.info("Processing specific serviceId: {}, asOf: {}, rerun: {}, test: {}", serviceId, asOf, rerun, test);
-            processServiceId(serviceId, asOf, rerun, test);
+            log.debug("Finding judgments for serviceId [{}]: asOf [{}], rerun [{}], test [{}]",
+                      serviceId, asOf, rerun, test);
+            List<Judgment> judgments = judgmentRepository.findForUpdateByServiceId(rerun, asOf, serviceId);
+
+            if (judgments.isEmpty()) {
+                log.info("No judgments found for serviceId [{}]", serviceId);
+            } else {
+                processJudgments(judgments, serviceId, asOf, rerun, test);
+            }
         }
+
         log.info("Report generation completed");
     }
 
-    /**
-     * Processes judgments for a specific serviceId.
-     *
-     * @param serviceId - The serviceId to process
-     * @param asOf - The timestamp to filter reports
-     * @param rerun - Whether this is a rerun or not
-     * @param test - Whether to run in test mode or not
-     */
-    private void processServiceId(String serviceId, LocalDateTime asOf, boolean rerun, boolean test) {
-        log.debug("Fetching judgments for serviceId: {}, asOf: {}, rerun: {}", serviceId, asOf, rerun);
+    private void processJudgments(List<Judgment> judgments,
+                                  String serviceId,
+                                  LocalDateTime asOf,
+                                  boolean rerun,
+                                  boolean test) {
+        log.debug("Processing judgments: serviceId [{}], asOf [{}], rerun [{}], test [{}]",
+                  serviceId, asOf, rerun, test);
 
-        List<Judgment> judgments = judgmentRepository.findForUpdate(rerun, asOf, serviceId);
+        judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
 
-        if (judgments.isEmpty()) {
-            log.warn("No judgments found for serviceId: {}, asOf: {}, rerun: {}", serviceId, asOf, rerun);
-            return;
-        }
-
-        String fileName = "judgments_" + asOf + "_" + serviceId + ".txt";
-        log.info("Writing judgments to file: {}", fileName);
-
-        try {
-            judgmentFileService.createAndSendJudgmentFile(judgments, asOf, serviceId, test);
-
-            if (!test && !rerun) {
-                updateReportedToRtl(judgments, asOf);
-                log.info("Database has been updated for {} judgments for serviceId: {}", judgments.size(), serviceId);
-            }
-        } catch (Exception e) {
-            log.error("Error processing serviceId: {}, Error: {}", serviceId, e.getMessage(), e);
+        if (!test && !rerun) {
+            updateReportedToRtl(judgments, asOf);
         }
     }
 
@@ -101,17 +98,11 @@ public class ScheduledReportService {
      * @param asOf - The timestamp to set for the reported_to_rtl field
      */
     private void updateReportedToRtl(List<Judgment> judgments, LocalDateTime asOf) {
-        if (asOf == null) {
-            throw new IllegalStateException("asOf cannot be null when updating the reported_to_rtl field");
-        }
+        log.debug("Updating [{}] judgments with reported to RTL date [{}]", judgments.size(), asOf);
 
         judgments.forEach(judgment -> judgment.setReportedToRtl(asOf));
-        try {
-            //Saves updated judgments back to database
-            judgmentRepository.saveAll(judgments);
-            log.debug("Successfully updated {} judgments with asOf: {}", judgments.size(), asOf);
-        } catch (Exception e) {
-            log.error("Failed to update the reported_to_rtl field for judgments. Error: {}", e.getMessage(), e);
-        }
+        judgmentRepository.saveAll(judgments);
+
+        log.debug("Successfully updated [{}] judgments with reported to RTL date [{}]", judgments.size(), asOf);
     }
 }
