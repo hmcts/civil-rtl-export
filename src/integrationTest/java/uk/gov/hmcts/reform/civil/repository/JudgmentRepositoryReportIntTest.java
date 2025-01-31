@@ -22,8 +22,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DataJpaTest
 @ActiveProfiles("itest")
-@Sql(scripts = {"test.sql"})
-class JudgmentRepositoryIntTest {
+@Sql(scripts = {"judgment_repository_report_int_test.sql"})
+class JudgmentRepositoryReportIntTest {
 
     private static final String SERVICE_ID_1 = "Sid1";
 
@@ -38,7 +38,7 @@ class JudgmentRepositoryIntTest {
     private final JudgmentRepository judgmentRepository;
 
     @Autowired
-    public JudgmentRepositoryIntTest(JudgmentRepository judgmentRepository) {
+    public JudgmentRepositoryReportIntTest(JudgmentRepository judgmentRepository) {
         this.judgmentRepository = judgmentRepository;
     }
 
