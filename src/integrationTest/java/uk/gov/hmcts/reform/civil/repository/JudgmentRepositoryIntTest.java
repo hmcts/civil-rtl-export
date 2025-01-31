@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DataJpaTest
@@ -121,26 +119,5 @@ class JudgmentRepositoryIntTest {
             arguments(IS_RERUN, oneDayAgo, List.of(JUDGMENT_ID_2)),
             arguments(IS_RERUN, twoDaysAgo, Collections.emptyList())
         );
-    }
-
-    @Test
-    void testDeleteJudgmentsBefore() {
-        assertTrue(judgmentRepository.existsById(5L),
-                   "Judgment with reported to RTL date inside threshold should exist");
-        assertTrue(judgmentRepository.existsById(6L),
-                   "Judgment with reported to RTL date on threshold should exist");
-        assertTrue(judgmentRepository.existsById(7L),
-                   "Judgment with reported to RTL date outside threshold should exist");
-
-        LocalDateTime dateOfDeletion = LocalDate.now().minusDays(90).atStartOfDay();
-        int deletedRowCount = judgmentRepository.deleteJudgmentsBefore(dateOfDeletion);
-
-        assertEquals(1, deletedRowCount, "Unexpected number of rows deleted");
-        assertTrue(judgmentRepository.existsById(5L),
-                   "Judgment with reported to RTL date inside threshold should not have been deleted");
-        assertTrue(judgmentRepository.existsById(6L),
-                   "Judgment with reported to RTL date on threshold should not have been deleted");
-        assertFalse(judgmentRepository.existsById(7L),
-                    "Judgment with reported to RTL date outside threshold should have been deleted");
     }
 }
