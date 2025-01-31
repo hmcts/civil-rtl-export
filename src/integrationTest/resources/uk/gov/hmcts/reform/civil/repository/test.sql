@@ -27,22 +27,4 @@ VALUES
  '444', 'CASE-REF-4444', 'CASE4444', 44.44, CURRENT_DATE,
  'R', null, 'Defendant Name 4', 'Address 4 Line 1', null,
  null, null, null, 'AA4 4AA', null,
- CURRENT_DATE - INTERVAL '1 day'),
-
-(5, 0, 'Sid3', 'JUDG-5555-5555', CURRENT_TIMESTAMP,
- '555', 'CASE-REF-5555', 'CASE5555', 55.55, CURRENT_DATE,
- 'R', null, 'Defendant Name 5', 'Address 5 Line 1', null,
- null, null, null, 'AA5 5AA', null,
- now() - INTERVAL '89 day'),
-
-(6, 0, 'Sid4', 'JUDG-6666-6666', CURRENT_TIMESTAMP,
- '666', 'CASE-REF-6666', 'CASE6666', 66.66, CURRENT_DATE,
- 'R', null, 'Defendant Name 6', 'Address 6 Line 1', null,
- null, null, null, 'AA6 6AA', null,
- now() - INTERVAL '90 day'),
-
-(7, 0, 'Sid5', 'JUDG-7777-7777', CURRENT_TIMESTAMP,
- '777', 'CASE-REF-7777', 'CASE7777', 77.77, CURRENT_DATE,
- 'R', null, 'Defendant Name 7', 'Address 7 Line 1', null,
- null, null, null, 'AA7 7AA', null,
- now() - INTERVAL '91 day');
+ CURRENT_DATE - INTERVAL '1 day');
