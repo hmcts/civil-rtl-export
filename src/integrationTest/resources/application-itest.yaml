@@ -5,3 +5,9 @@ spring:
   test:
     database:
       replace: none
+
+rtl-export:
+  sftp:
+    host: localhost
+    serverPort: 1024
+    remoteDir: data
