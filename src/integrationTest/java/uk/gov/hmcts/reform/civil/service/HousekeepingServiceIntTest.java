@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.civil.service;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -22,9 +21,6 @@ class HousekeepingServiceIntTest {
     private final JudgmentRepository judgmentRepository;
 
     private final HousekeepingService housekeepingService;
-
-    @Value("${rtl-export.housekeeping.minimumAge}")
-    private int minimumAge;
 
     @Autowired
     public HousekeepingServiceIntTest(JudgmentRepository judgmentRepository, HousekeepingService housekeepingService) {
