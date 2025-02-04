@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 @SpringBootTest
 @ActiveProfiles("itest")
-@Sql(scripts = {"HousekeepingTest.sql"})
+@Sql(scripts = {"housekeeping_service_int_test.sql"})
 class HousekeepingServiceIntTest {
 
     private final JudgmentRepository judgmentRepository;
