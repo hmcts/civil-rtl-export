@@ -37,11 +37,9 @@ class SftpServiceIntTest {
     private static final String TEST_FILE_DIR = "src/integrationTest/resources/uk/gov/hmcts/reform/civil/service/sftp/";
     private static final String TEST_FILE_NAME = "sftp_test_file.txt";
 
-    @Value("${rtl-export.sftp.serverPort}")
-    private int sftpPort;
+    private final int sftpPort;
 
-    @Value("${rtl-export.sftp.remoteDir}")
-    private String sftpRemoteDir;
+    private final String sftpRemoteDir;
 
     @TempDir
     private File sftpRootDir;
@@ -49,8 +47,12 @@ class SftpServiceIntTest {
     private final SftpService sftpService;
 
     @Autowired
-    public SftpServiceIntTest(SftpService sftpService) {
+    public SftpServiceIntTest(SftpService sftpService,
+                              @Value("${rtl-export.sftp.serverPort}") int sftpPort,
+                              @Value("${rtl-export.sftp.remoteDir}") String sftpRemoteDir) {
         this.sftpService = sftpService;
+        this.sftpPort = sftpPort;
+        this.sftpRemoteDir = sftpRemoteDir;
     }
 
     @Test
