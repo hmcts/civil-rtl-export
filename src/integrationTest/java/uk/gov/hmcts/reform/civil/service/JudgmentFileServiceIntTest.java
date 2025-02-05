@@ -95,6 +95,7 @@ class JudgmentFileServiceIntTest {
             assertNoFilesInDir(tempDir, DIR_TYPE_TEMP);
 
             File remoteDir = sftpServer.getRemoteDir();
+            assertNumFilesInDir(remoteDir, DIR_TYPE_REMOTE, 2);
             assertFileInDir(remoteDir, DIR_TYPE_REMOTE, headerFileName, EXPECTED_HEADER_FILE_CONTENT);
             assertFileInDir(remoteDir, DIR_TYPE_REMOTE, detailsFileName, getExpectedDetailsFileContent());
         }
@@ -112,6 +113,7 @@ class JudgmentFileServiceIntTest {
             judgmentFileService.createAndSendJudgmentFile(judgments, DATE_TIME_AS_OF, SERVICE_ID_1, true);
 
             File tempDir = judgmentFileService.getTmpDirectory();
+            assertNumFilesInDir(tempDir, DIR_TYPE_TEMP, 2);
             assertFileInDir(tempDir, DIR_TYPE_TEMP, headerFileName, EXPECTED_HEADER_FILE_CONTENT);
             assertFileInDir(tempDir, DIR_TYPE_TEMP, detailsFileName, getExpectedDetailsFileContent());
 
@@ -148,9 +150,13 @@ class JudgmentFileServiceIntTest {
     }
 
     private void assertNoFilesInDir(File dir, String dirType) {
+        assertNumFilesInDir(dir, dirType, 0);
+    }
+
+    private void assertNumFilesInDir(File dir, String dirType, int numFiles) {
         File[] filesInDir = dir.listFiles();
         assertNotNull(filesInDir, dirType + " directory listing should not be null");
-        assertEquals(0, filesInDir.length, dirType + " directory should not contain any files");
+        assertEquals(numFiles, filesInDir.length, dirType + " directory does not contain expected number of files");
     }
 
     private void assertFileInDir(File dir, String dirType, String fileName, String fileContent) throws IOException {
