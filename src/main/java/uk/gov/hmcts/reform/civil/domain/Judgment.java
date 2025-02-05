@@ -22,6 +22,8 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 public class Judgment {
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "jud_seq")
     @SequenceGenerator(name = "jud_seq", sequenceName = "jud_seq", allocationSize = 1)
@@ -116,28 +118,29 @@ public class Judgment {
     }
 
     public String toFormattedString() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
-
         return String.join("",
                            courtCode,
                            caseNumber,
-                           StringUtils.leftPad(String.format("%08.2f", judgmentAdminOrderTotal), 11, '0'),
-                           judgmentAdminOrderDate.format(dateTimeFormatter),
+                           String.format("%011.2f", judgmentAdminOrderTotal),
+                           judgmentAdminOrderDate.format(DATE_FORMAT),
                            registrationType,
-                           cancellationDate != null ? cancellationDate.format(dateTimeFormatter) :
-                               StringUtils.rightPad("", 8),
+                           formattedOptionalDate(cancellationDate),
                            StringUtils.rightPad(defendantName, 70),
                            StringUtils.rightPad(defendantAddressLine1, 35),
-                           formattedAddressLine(defendantAddressLine2),
-                           formattedAddressLine(defendantAddressLine3),
-                           formattedAddressLine(defendantAddressLine4),
-                           formattedAddressLine(defendantAddressLine5),
+                           formattedOptionalAddressLine(defendantAddressLine2),
+                           formattedOptionalAddressLine(defendantAddressLine3),
+                           formattedOptionalAddressLine(defendantAddressLine4),
+                           formattedOptionalAddressLine(defendantAddressLine5),
                            StringUtils.rightPad(defendantAddressPostcode, 8),
-                           defendantDob != null ? defendantDob.format(dateTimeFormatter) : StringUtils.rightPad("", 8)
+                           formattedOptionalDate(defendantDob)
         );
     }
 
-    private String formattedAddressLine(String addressLine) {
+    private String formattedOptionalDate(LocalDate date) {
+        return date != null ? date.format(DATE_FORMAT) : StringUtils.rightPad("", 8);
+    }
+
+    private String formattedOptionalAddressLine(String addressLine) {
         return StringUtils.rightPad(addressLine == null ? "" : addressLine, 35);
     }
 }
