@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.civil.service.sftp;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -31,14 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 )
 @EnableConfigurationProperties(SftpConfigProperties.class)
 @ActiveProfiles("itest")
-@Slf4j
 class SftpServiceIntTest {
 
     private static final String TEST_FILE_DIR = "src/integrationTest/resources/uk/gov/hmcts/reform/civil/service/sftp/";
     private static final String TEST_FILE_NAME = "sftp_test_file.txt";
 
     private final int sftpPort;
-
     private final String sftpRemoteDir;
 
     @TempDir
