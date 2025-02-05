@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
+import uk.gov.hmcts.reform.civil.exception.SaveFileException;
 import uk.gov.hmcts.reform.civil.service.sftp.SftpService;
 
 import java.io.BufferedWriter;
@@ -23,10 +24,13 @@ import java.util.List;
 @Slf4j
 public class JudgmentFileService {
 
-    private static final String TEMP_DIR = "judgment-files";
+    private static final String TEMP_DIR_PREFIX = "judgment-files";
 
     private static final String FILE_EXTENSION_HEADER = "hdr";
     private static final String FILE_EXTENSION_DETAILS = "det";
+
+    private static final DateTimeFormatter DATE_FORMAT_HEADER_CREATION_DATE = DateTimeFormatter.ofPattern("ddMMyyyy");
+    private static final DateTimeFormatter DATE_FORMAT_FILE_NAME = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
 
     private final SftpService sftpService;
 
@@ -37,11 +41,13 @@ public class JudgmentFileService {
     @Autowired
     public JudgmentFileService(SftpService sftpService) throws IOException {
         this.sftpService = sftpService;
-        this.tmpDirectory = Files.createTempDirectory(TEMP_DIR).toFile();
+        this.tmpDirectory = Files.createTempDirectory(TEMP_DIR_PREFIX).toFile();
     }
 
-    public void createAndSendJudgmentFile(List<Judgment> judgments, LocalDateTime asOf,
-                                          String serviceId, boolean test) {
+    public void createAndSendJudgmentFile(List<Judgment> judgments,
+                                          LocalDateTime asOf,
+                                          String serviceId,
+                                          boolean test) {
         if (!judgments.isEmpty()) {
 
             String dataFileContent = generateDataFileContent(judgments);
@@ -84,19 +90,17 @@ public class JudgmentFileService {
         }
 
         String recordCountString = StringUtils.rightPad(String.valueOf(recordCount), 10);
-        String formattedDateString = creationDate.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
+        String formattedDateString = creationDate.format(DATE_FORMAT_HEADER_CREATION_DATE);
 
         return recordCountString + formattedDateString;
     }
 
     private File saveToFile(String content, String serviceId, LocalDateTime timestamp, String fileExtension) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-
         if (timestamp == null) {
             timestamp = LocalDateTime.now();
         }
 
-        String formattedDate = timestamp.format(formatter);
+        String formattedDate = timestamp.format(DATE_FORMAT_FILE_NAME);
 
         String fileName = String.format("judgment-%s-%s.%s", formattedDate, serviceId, fileExtension);
         File file = new File(tmpDirectory, fileName);
@@ -105,7 +109,7 @@ public class JudgmentFileService {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(content);
         } catch (IOException e) {
-            log.error("Error while saving the file: ", e);
+            throw new SaveFileException(e);
         }
 
         return file;
