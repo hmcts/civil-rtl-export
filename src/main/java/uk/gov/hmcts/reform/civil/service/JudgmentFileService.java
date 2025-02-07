@@ -49,6 +49,7 @@ public class JudgmentFileService {
                                           String serviceId,
                                           boolean test) {
         if (!judgments.isEmpty()) {
+            log.info("Generating and saving files for serviceId [{}]", serviceId);
 
             String dataFileContent = generateDataFileContent(judgments);
             File dataFile = saveToFile(dataFileContent, serviceId, asOf, FILE_EXTENSION_DETAILS);
@@ -78,6 +79,7 @@ public class JudgmentFileService {
     }
 
     private String generateDataFileContent(List<Judgment> judgments) {
+        log.debug("Generating data file content");
         StringBuilder sb = new StringBuilder();
         judgments.forEach(judgment -> sb.append(judgment.toFormattedString()).append("\n"));
 
@@ -85,6 +87,7 @@ public class JudgmentFileService {
     }
 
     private String generateHeaderFileContent(int recordCount, LocalDateTime creationDate) {
+        log.debug("Generating header file content");
         if (creationDate == null) {
             creationDate = LocalDateTime.now();
         }
@@ -104,7 +107,7 @@ public class JudgmentFileService {
 
         String fileName = String.format("judgment-%s-%s.%s", formattedDate, serviceId, fileExtension);
         File file = new File(tmpDirectory, fileName);
-        log.info("Saving file {}", file.getAbsolutePath());
+        log.debug("Saving file [{}]", file.getAbsolutePath());
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(content);

@@ -34,7 +34,7 @@ public class SftpService {
             log.debug("Starting SshClient");
             sshClient.start();
 
-            log.debug("Creating client session to SFTP server. Host: {}, Port: {}, Username: {}",
+            log.debug("Creating client session to SFTP server. Host: [{}], Port: [{}], Username: [{}]",
                       sftpConfig.getHost(),
                       sftpConfig.getServerPort(),
                       sftpConfig.getUserName());
@@ -54,9 +54,9 @@ public class SftpService {
                     for (File dataFile : dataFiles) {
                         String remotePath = remotePathPrefix + dataFile.getName();
 
-                        log.info("Uploading file {} to {} on SFTP server", dataFile.getName(), remotePath);
+                        log.info("Uploading file [{}] to [{}] on SFTP server", dataFile.getName(), remotePath);
                         sftpClient.put(dataFile.toPath(), remotePath);
-                        log.info("File {} uploaded to {} on SFTP server", dataFile.getName(), remotePath);
+                        log.info("File [{}] uploaded to [{}] on SFTP server", dataFile.getName(), remotePath);
                     }
                 }
             }
