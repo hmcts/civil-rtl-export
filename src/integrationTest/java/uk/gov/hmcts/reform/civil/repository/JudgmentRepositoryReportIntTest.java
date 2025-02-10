@@ -5,9 +5,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
 
 import java.time.LocalDate;
@@ -20,8 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@DataJpaTest
+@SpringBootTest
 @ActiveProfiles("itest")
+@Transactional
 @Sql(scripts = {"judgment_repository_report_int_test.sql"})
 class JudgmentRepositoryReportIntTest {
 

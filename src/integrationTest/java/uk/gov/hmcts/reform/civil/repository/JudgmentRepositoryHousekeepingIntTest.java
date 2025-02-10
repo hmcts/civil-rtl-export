@@ -2,9 +2,10 @@ package uk.gov.hmcts.reform.civil.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,8 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataJpaTest
+@SpringBootTest
 @ActiveProfiles("itest")
+@Transactional
 @Sql(scripts = {"judgment_repository_housekeeping_int_test.sql"})
 class JudgmentRepositoryHousekeepingIntTest {
 

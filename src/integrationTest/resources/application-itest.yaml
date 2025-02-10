@@ -7,6 +7,13 @@ spring:
       replace: none
 
 rtl-export:
+  task:
+    scheduledReport:
+      asOf: null
+      test: false
+      serviceId: null
+    housekeeping:
+      minimumAge: 90
   sftp:
     host: localhost
     serverPort: 1024

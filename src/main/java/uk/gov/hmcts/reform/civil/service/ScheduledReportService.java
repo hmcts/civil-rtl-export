@@ -34,14 +34,8 @@ public class ScheduledReportService {
      * @param serviceId - id of the service to generate reports for
      */
     public void generateReport(boolean test, LocalDateTime asOf, String serviceId) {
-        boolean rerun;
-
-        if (asOf == null) {
-            rerun = false;
-            asOf = LocalDateTime.now();
-        } else {
-            rerun = true;
-        }
+        boolean rerun = asOf != null;
+        LocalDateTime reportedToRtlDate = asOf == null ? LocalDateTime.now() : asOf;
 
         log.info("Report generation has started");
 
@@ -57,7 +51,11 @@ public class ScheduledReportService {
                     judgments.stream().collect(groupingBy(Judgment::getServiceId));
 
                 for (Map.Entry<String, List<Judgment>> judgmentsServiceId : judgmentsGroupedByServiceId.entrySet()) {
-                    processJudgments(judgmentsServiceId.getValue(), judgmentsServiceId.getKey(), asOf, rerun, test);
+                    processJudgments(judgmentsServiceId.getValue(),
+                                     judgmentsServiceId.getKey(),
+                                     reportedToRtlDate,
+                                     rerun,
+                                     test);
                 }
             }
 
@@ -69,7 +67,7 @@ public class ScheduledReportService {
             if (judgments.isEmpty()) {
                 log.info("No judgments found for serviceId [{}]", serviceId);
             } else {
-                processJudgments(judgments, serviceId, asOf, rerun, test);
+                processJudgments(judgments, serviceId, reportedToRtlDate, rerun, test);
             }
         }
 

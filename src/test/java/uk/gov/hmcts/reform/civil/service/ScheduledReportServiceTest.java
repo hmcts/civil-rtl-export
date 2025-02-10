@@ -57,12 +57,11 @@ class ScheduledReportServiceTest {
 
     @Test
     void testNoJudgmentsNoServiceId() {
-        when(judgmentRepository.findForUpdate(eq(NOT_RERUN), any(LocalDateTime.class)))
-            .thenReturn(Collections.emptyList());
+        when(judgmentRepository.findForUpdate(NOT_RERUN, null)).thenReturn(Collections.emptyList());
 
         scheduledReportService.generateReport(NOT_TEST, null, null);
 
-        verify(judgmentRepository).findForUpdate(eq(NOT_RERUN), any(LocalDateTime.class));
+        verify(judgmentRepository).findForUpdate(NOT_RERUN, null);
         verify(judgmentFileService, never())
             .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), anyString(), anyBoolean());
         verify(judgmentRepository, never()).saveAll(anyList());
@@ -70,12 +69,12 @@ class ScheduledReportServiceTest {
 
     @Test
     void testNoJudgmentsServiceId() {
-        when(judgmentRepository.findForUpdateByServiceId(eq(NOT_RERUN), any(LocalDateTime.class), eq(SERVICE_ID_1)))
+        when(judgmentRepository.findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1))
             .thenReturn(Collections.emptyList());
 
         scheduledReportService.generateReport(NOT_TEST, null, SERVICE_ID_1);
 
-        verify(judgmentRepository).findForUpdateByServiceId(eq(NOT_RERUN), any(LocalDateTime.class), eq(SERVICE_ID_1));
+        verify(judgmentRepository).findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1);
         verify(judgmentFileService, never())
             .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), anyString(), anyBoolean());
         verify(judgmentRepository, never()).saveAll(anyList());
@@ -93,14 +92,14 @@ class ScheduledReportServiceTest {
         judgment2.setServiceId(SERVICE_ID_2);
         judgments.add(judgment2);
 
-        when(judgmentRepository.findForUpdate(eq(NOT_RERUN), any(LocalDateTime.class))).thenReturn(judgments);
+        when(judgmentRepository.findForUpdate(NOT_RERUN, null)).thenReturn(judgments);
 
         scheduledReportService.generateReport(NOT_TEST, null, null);
 
         assertNotNull(judgment1.getReportedToRtl(), "Judgment1 reported to RTL date should not be null");
         assertNotNull(judgment2.getReportedToRtl(), "Judgment2 reported to RTL date should not be null");
 
-        verify(judgmentRepository).findForUpdate(eq(NOT_RERUN), any(LocalDateTime.class));
+        verify(judgmentRepository).findForUpdate(NOT_RERUN, null);
         verify(judgmentFileService)
             .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(NOT_TEST));
         verify(judgmentFileService)
@@ -116,14 +115,13 @@ class ScheduledReportServiceTest {
         judgment.setServiceId(SERVICE_ID_1);
         judgments.add(judgment);
 
-        when(judgmentRepository.findForUpdateByServiceId(eq(NOT_RERUN), any(LocalDateTime.class), eq(SERVICE_ID_1)))
-            .thenReturn(judgments);
+        when(judgmentRepository.findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1)).thenReturn(judgments);
 
         scheduledReportService.generateReport(NOT_TEST, null, SERVICE_ID_1);
 
         assertNotNull(judgment.getReportedToRtl(), "Judgment reported to RTL date should not be null");
 
-        verify(judgmentRepository).findForUpdateByServiceId(eq(NOT_RERUN), any(LocalDateTime.class), eq(SERVICE_ID_1));
+        verify(judgmentRepository).findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1);
         verify(judgmentFileService)
             .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(NOT_TEST));
         verify(judgmentRepository).saveAll(anyList());
@@ -140,7 +138,7 @@ class ScheduledReportServiceTest {
         judgments.add(judgment);
 
         if (asOf == null) {
-            when(judgmentRepository.findForUpdate(eq(NOT_RERUN), any(LocalDateTime.class))).thenReturn(judgments);
+            when(judgmentRepository.findForUpdate(NOT_RERUN, null)).thenReturn(judgments);
         } else {
             when(judgmentRepository.findForUpdate(IS_RERUN, asOf)).thenReturn(judgments);
         }
@@ -149,7 +147,7 @@ class ScheduledReportServiceTest {
 
         if (asOf == null) {
             assertNull(judgment.getReportedToRtl(), "Judgment reported to RTL date should be null");
-            verify(judgmentRepository).findForUpdate(eq(NOT_RERUN), any(LocalDateTime.class));
+            verify(judgmentRepository).findForUpdate(NOT_RERUN, null);
             verify(judgmentFileService)
                 .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(test));
         } else {

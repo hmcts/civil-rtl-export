@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.civil.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.civil.repository.JudgmentRepository;
 
@@ -17,18 +16,17 @@ public class HousekeepingService {
     private final int minimumAge;
 
     public HousekeepingService(JudgmentRepository judgmentRepository,
-                               @Value("${rtl-export.housekeeping.minimumAge}")
-                               int minimumAge) {
-
+                               @Value("${rtl-export.task.housekeeping.minimumAge}") int minimumAge) {
         this.judgmentRepository = judgmentRepository;
         this.minimumAge = minimumAge;
     }
 
-    @Scheduled(cron = "${rtl-export.housekeeping.cron}")
     public void deleteOldJudgments() {
-        LocalDateTime dateOfDeletion = LocalDate.now().minusDays(minimumAge).atStartOfDay();
+        log.info("Deleting judgments older than [{}] days", minimumAge);
 
+        LocalDateTime dateOfDeletion = LocalDate.now().minusDays(minimumAge).atStartOfDay();
         int deletedJudgmentsCount = judgmentRepository.deleteJudgmentsBefore(dateOfDeletion);
-        log.info("{} old judgments have been deleted for housekeeping.", deletedJudgmentsCount);
+
+        log.info("[{}] old judgment(s) have been deleted", deletedJudgmentsCount);
     }
 }
