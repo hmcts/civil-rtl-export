@@ -51,7 +51,7 @@ class ReportControllerTest {
 
         ResponseEntity<String> responseEntity = reportController.triggerReport(null, false, null);
 
-        assertEquals("Report failed: java.io.IOException: This is the cause", responseEntity.getBody());
+        assertEquals("Report failed", responseEntity.getBody());
         verify(mockScheduledReportService).generateReport(false, null, null);
     }
 
@@ -60,7 +60,7 @@ class ReportControllerTest {
     void triggerReportInvalidServiceId(String serviceId) {
         ResponseEntity<String> responseEntity = reportController.triggerReport(null, false, serviceId);
 
-        assertEquals("Report failed: Invalid Service ID", responseEntity.getBody());
+        assertEquals("Report failed", responseEntity.getBody());
         verify(mockScheduledReportService, never()).generateReport(false, null, serviceId);
     }
 }

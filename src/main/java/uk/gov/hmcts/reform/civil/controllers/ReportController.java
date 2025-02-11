@@ -58,7 +58,7 @@ public class ReportController {
         } catch (Exception e) {
             log.error("Error occurred during report generation. Test mode: [{}], asOf: [{}], Service ID: [{}]",
                       test, asOf, serviceId, e);
-            return ResponseEntity.internalServerError().body("Report failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Report failed");
         }
     }
 

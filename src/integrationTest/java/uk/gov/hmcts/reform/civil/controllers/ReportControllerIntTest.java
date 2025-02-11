@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -154,7 +154,7 @@ class ReportControllerIntTest {
         try (LocalSftpServer sftpServer = LocalSftpServer.create(sftpPort + 1, sftpRootDir, sftpRemoteDir)) {
             mockMvc.perform(get(URL_REPORT).queryParams(getQueryParams(DATE_TIME_AS_OF, null, SERVICE_ID_2)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string(startsWith("Report failed:")));
+                .andExpect(content().string(equalTo("Report failed")));
 
             File remoteDir = sftpServer.getRemoteDir();
             assertNoFilesInRemoteDir(remoteDir);
