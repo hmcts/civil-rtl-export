@@ -5,6 +5,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -109,6 +110,13 @@ class ReportControllerIntTest {
             File remoteDir = sftpServer.getRemoteDir();
             assertFilesInRemoteDir(remoteDir, List.of("IT03.hdr", "IT03.det"));
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"A", "AA", "AAA", "AAAAA", "aaaa", "1", "11", "111", "11111", "_"})
+    void testReportInvalidServiceId(String serviceId) throws Exception {
+        mockMvc.perform(get(URL_REPORT).queryParams(getQueryParams(null, null, serviceId)))
+            .andExpect(status().is4xxClientError());
     }
 
     @Test
