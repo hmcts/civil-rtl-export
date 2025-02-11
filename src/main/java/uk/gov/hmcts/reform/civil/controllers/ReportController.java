@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.civil.exception.InvalidServiceIdException;
 import uk.gov.hmcts.reform.civil.service.ScheduledReportService;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,8 @@ import java.time.LocalDateTime;
 @RestController
 @Slf4j
 public class ReportController {
+
+    private static final String REGEX_VALID_SERVICE_ID = "^[A-Z0-9]{4}$";
 
     private final ScheduledReportService scheduledReportService;
 
@@ -42,17 +45,26 @@ public class ReportController {
         @RequestParam(defaultValue = "false") boolean test,
         @RequestParam(required = false) String serviceId) {
 
-        log.info("Report requested. Test mode: [{}], asOf: [{}], ServiceID: [{}]", test, asOf, serviceId);
-
         try {
+            if (serviceId != null) {
+                validateServiceId(serviceId);
+            }
+
+            log.info("Report requested. Test mode: [{}], asOf: [{}], Service ID: [{}]", test, asOf, serviceId);
             scheduledReportService.generateReport(test, asOf, serviceId);
-            log.info("Report completed. Test mode: [{}], asOf: [{}], ServiceID: [{}]",
-                     test, asOf, serviceId);
+            log.info("Report completed. Test mode: [{}], asOf: [{}], Service ID: [{}]", test, asOf, serviceId);
+
             return ResponseEntity.ok("Report has completed successfully");
         } catch (Exception e) {
             log.error("Error occurred during report generation. Test mode: [{}], asOf: [{}], Service ID: [{}]",
                       test, asOf, serviceId, e);
             return ResponseEntity.internalServerError().body("Report failed: " + e.getMessage());
+        }
+    }
+
+    private void validateServiceId(String serviceId) {
+        if (!serviceId.matches(REGEX_VALID_SERVICE_ID)) {
+            throw new InvalidServiceIdException("Invalid Service ID");
         }
     }
 }
