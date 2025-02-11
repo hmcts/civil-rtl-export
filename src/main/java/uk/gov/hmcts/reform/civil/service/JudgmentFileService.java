@@ -15,10 +15,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+
+import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
+import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
+import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 
 @Service
 @Slf4j
@@ -40,7 +49,10 @@ public class JudgmentFileService {
     @Autowired
     public JudgmentFileService(SftpService sftpService) throws IOException {
         this.sftpService = sftpService;
-        this.tmpDirectory = Files.createTempDirectory(TEMP_DIR_PREFIX).toFile();
+
+        FileAttribute<Set<PosixFilePermission>> attr =
+            PosixFilePermissions.asFileAttribute(EnumSet.of(OWNER_READ, OWNER_WRITE, OWNER_EXECUTE));
+        this.tmpDirectory = Files.createTempDirectory(TEMP_DIR_PREFIX, attr).toFile();
     }
 
     public void createAndSendJudgmentFile(List<Judgment> judgments,
