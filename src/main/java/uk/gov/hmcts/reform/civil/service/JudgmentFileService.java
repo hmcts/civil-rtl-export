@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.civil.service;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
+import uk.gov.hmcts.reform.civil.exception.DeleteFileException;
 import uk.gov.hmcts.reform.civil.exception.SaveFileException;
 import uk.gov.hmcts.reform.civil.service.sftp.SftpService;
 
@@ -35,8 +35,7 @@ public class JudgmentFileService {
     private final SftpService sftpService;
 
     @Getter
-    @Setter
-    private File tmpDirectory;
+    private final File tmpDirectory;
 
     @Autowired
     public JudgmentFileService(SftpService sftpService) throws IOException {
@@ -66,11 +65,12 @@ public class JudgmentFileService {
 
                 sftpService.uploadFiles(dataFiles);
 
-                if (!dataFile.delete()) {
-                    throw new IllegalStateException("Failed to delete data file: " + dataFile.getAbsolutePath());
-                }
-                if (!headerFile.delete()) {
-                    throw new IllegalStateException("Failed to delete header file: " + headerFile.getAbsolutePath());
+                for (File file : dataFiles) {
+                    try {
+                        Files.delete(file.toPath());
+                    } catch (IOException e) {
+                        throw new DeleteFileException("Unable to delete file [" + file.getName() + "]");
+                    }
                 }
             } else {
                 log.info("Test mode is ON. Files will not be transferred to the server");
