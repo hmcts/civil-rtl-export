@@ -18,22 +18,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("itest")
 @Transactional
-@Sql("scheduled_task_runner_int_test.sql")
-class ScheduledTaskRunnerIntTest {
-
-    private static final String TASK_NAME_SCHEDULED_REPORT = "ScheduledReportTask";
-    private static final String TASK_NAME_HOUSEKEEPING = "HousekeepingTask";
+@Sql("scheduled_report_task_int_test.sql")
+class ScheduledReportTaskIntTest {
 
     private final JudgmentRepository judgmentRepository;
 
-    private final ScheduledTaskRunner scheduledTaskRunner;
+    private final ScheduledReportTask scheduledReportTask;
 
     private final int sftpPort;
     private final String sftpRemoteDir;
@@ -42,11 +38,11 @@ class ScheduledTaskRunnerIntTest {
     private File sftpRootDir;
 
     @Autowired
-    public ScheduledTaskRunnerIntTest(ScheduledTaskRunner scheduledTaskRunner,
+    public ScheduledReportTaskIntTest(ScheduledReportTask scheduledReportTask,
                                       JudgmentRepository judgmentRepository,
                                       @Value("${rtl-export.sftp.serverPort}") int sftpPort,
                                       @Value("${rtl-export.sftp.remoteDir}") String sftpRemoteDir) {
-        this.scheduledTaskRunner = scheduledTaskRunner;
+        this.scheduledReportTask = scheduledReportTask;
         this.judgmentRepository = judgmentRepository;
         this.sftpPort = sftpPort;
         this.sftpRemoteDir = sftpRemoteDir;
@@ -55,19 +51,12 @@ class ScheduledTaskRunnerIntTest {
     @Test
     void testScheduledReportTask() throws IOException {
         try (LocalSftpServer sftpServer = LocalSftpServer.create(sftpPort, sftpRootDir, sftpRemoteDir)) {
-            scheduledTaskRunner.run(TASK_NAME_SCHEDULED_REPORT);
+            scheduledReportTask.run();
 
             File remoteDir = sftpServer.getRemoteDir();
             assertFilesInRemoteDir(remoteDir, List.of("IT01.hdr", "IT01.det", "IT02.hdr", "IT02.det"));
             assertReportedToRtlDateNotNull(List.of(1L, 3L));
         }
-    }
-
-    @Test
-    void testHousekeepingTask() {
-        assertTrue(judgmentRepository.existsById(5L), "Judgment should exist before housekeeping");
-        scheduledTaskRunner.run(TASK_NAME_HOUSEKEEPING);
-        assertFalse(judgmentRepository.existsById(5L), "Judgment should not exist after housekeeping");
     }
 
     private void assertFilesInRemoteDir(File remoteDir, List<String> fileNames) {
