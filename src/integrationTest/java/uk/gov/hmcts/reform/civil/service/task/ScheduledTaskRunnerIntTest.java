@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.civil.service.task;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,6 +35,9 @@ class ScheduledTaskRunnerIntTest {
 
     private static final String TASK_NAME_SCHEDULED_REPORT = "ScheduledReportTask";
     private static final String TASK_NAME_HOUSEKEEPING = "HousekeepingTask";
+    private static final String TASK_NAME_UNKNOWN = "UnknownTask";
+
+    private static final String BEAN_NAME_UNKNOWN = "unknownTask";
 
     private final JudgmentRepository judgmentRepository;
 
@@ -68,6 +76,25 @@ class ScheduledTaskRunnerIntTest {
         assertTrue(judgmentRepository.existsById(5L), "Judgment should exist before housekeeping");
         scheduledTaskRunner.run(TASK_NAME_HOUSEKEEPING);
         assertFalse(judgmentRepository.existsById(5L), "Judgment should not exist after housekeeping");
+    }
+
+    @Test
+    void testUnknownTask() {
+        Logger logger = (Logger) LoggerFactory.getLogger(ScheduledTaskRunner.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+
+        scheduledTaskRunner.run(TASK_NAME_UNKNOWN);
+
+        logger.detachAndStopAllAppenders();
+        List<ILoggingEvent> logList = listAppender.list;
+
+        int numLogMessages = logList.size();
+        assertEquals(2, numLogMessages, "Unexpected number of messages in log");
+        assertEquals("Task not found [" + TASK_NAME_UNKNOWN + "] (bean [" + BEAN_NAME_UNKNOWN + "])",
+                     logList.get(numLogMessages - 1).getFormattedMessage(),
+                     "Unexpected message in log");
     }
 
     private void assertReportedToRtlDateNotNull(List<Long> ids) {
