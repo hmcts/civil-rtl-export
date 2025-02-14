@@ -18,18 +18,19 @@ import uk.gov.hmcts.reform.civil.service.sftp.SftpService;
 import uk.gov.hmcts.reform.civil.util.LocalSftpServer;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.DIR_TYPE_REMOTE;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.DIR_TYPE_TEMP;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertFileInDir;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertNoFilesInDir;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertNumFilesInDir;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
@@ -39,9 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @EnableConfigurationProperties(SftpConfigProperties.class)
 @ActiveProfiles("itest")
 class JudgmentFileServiceIntTest {
-
-    private static final String DIR_TYPE_TEMP = "Temp";
-    private static final String DIR_TYPE_REMOTE = "Remote";
 
     private static final LocalDateTime DATE_TIME_AS_OF = LocalDateTime.of(2025, 1, 1, 15, 23, 10);
     private static final String SERVICE_ID_1 = "IT01";
@@ -96,8 +94,8 @@ class JudgmentFileServiceIntTest {
 
             File remoteDir = sftpServer.getRemoteDir();
             assertNumFilesInDir(remoteDir, DIR_TYPE_REMOTE, 2);
-            assertFileInDir(remoteDir, DIR_TYPE_REMOTE, headerFileName, EXPECTED_HEADER_FILE_CONTENT);
-            assertFileInDir(remoteDir, DIR_TYPE_REMOTE, detailsFileName, getExpectedDetailsFileContent());
+            assertFileInDir(remoteDir, DIR_TYPE_REMOTE, headerFileName, List.of(EXPECTED_HEADER_FILE_CONTENT));
+            assertFileInDir(remoteDir, DIR_TYPE_REMOTE, detailsFileName, List.of(getExpectedDetailsFileContent()));
         }
     }
 
@@ -114,8 +112,8 @@ class JudgmentFileServiceIntTest {
 
             File tempDir = judgmentFileService.getTmpDirectory();
             assertNumFilesInDir(tempDir, DIR_TYPE_TEMP, 2);
-            assertFileInDir(tempDir, DIR_TYPE_TEMP, headerFileName, EXPECTED_HEADER_FILE_CONTENT);
-            assertFileInDir(tempDir, DIR_TYPE_TEMP, detailsFileName, getExpectedDetailsFileContent());
+            assertFileInDir(tempDir, DIR_TYPE_TEMP, headerFileName, List.of(EXPECTED_HEADER_FILE_CONTENT));
+            assertFileInDir(tempDir, DIR_TYPE_TEMP, detailsFileName, List.of(getExpectedDetailsFileContent()));
 
             File remoteDir = sftpServer.getRemoteDir();
             assertNoFilesInDir(remoteDir, DIR_TYPE_REMOTE);
@@ -147,31 +145,5 @@ class JudgmentFileServiceIntTest {
             + "                                   "
             + "DD1 1DD "
             + "        ";
-    }
-
-    private void assertNoFilesInDir(File dir, String dirType) {
-        assertNumFilesInDir(dir, dirType, 0);
-    }
-
-    private void assertNumFilesInDir(File dir, String dirType, int numFiles) {
-        File[] filesInDir = dir.listFiles();
-        assertNotNull(filesInDir, dirType + " directory listing should not be null");
-        assertEquals(numFiles, filesInDir.length, dirType + " directory does not contain expected number of files");
-    }
-
-    private void assertFileInDir(File dir, String dirType, String fileName, String fileContent) throws IOException {
-        FilenameFilter filter = (directory, name) -> name.endsWith(fileName);
-
-        File[] filesInDir = dir.listFiles(filter);
-        assertNotNull(filesInDir, dirType + " directory listing should not be null");
-        assertEquals(1, filesInDir.length, dirType + " directory should contain file " + fileName);
-
-        List<String> fileLines = Files.readAllLines(filesInDir[0].toPath());
-        assertEquals(1,
-                     fileLines.size(),
-                     fileName + " in " + dirType + " directory contains unexpected number of lines");
-        assertEquals(fileContent,
-                     fileLines.getFirst(),
-                     fileName + " in " + dirType + " directory does not contain expected content");
     }
 }

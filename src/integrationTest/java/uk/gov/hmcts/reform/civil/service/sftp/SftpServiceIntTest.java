@@ -18,10 +18,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.DIR_TYPE_REMOTE;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertFileNamesInDir;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertNoFilesInDir;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
@@ -62,10 +63,8 @@ class SftpServiceIntTest {
 
             sftpService.uploadFiles(dataFiles);
 
-            File[] transferredFiles = sftpServer.getRemoteDir().listFiles();
-            assertNotNull(transferredFiles, "SFTP server remote directory listing should not be null");
-            assertEquals(1, transferredFiles.length, "A file should be transferred to SFTP server");
-            assertEquals(TEST_FILE_NAME, transferredFiles[0].getName(), "Unexpected file transferred to SFTP server");
+            File remoteDir = sftpServer.getRemoteDir();
+            assertFileNamesInDir(remoteDir, DIR_TYPE_REMOTE, List.of(TEST_FILE_NAME));
         }
     }
 
@@ -85,9 +84,8 @@ class SftpServiceIntTest {
             assertTrue(exception.getMessage().contains("Connection refused"),
                        "Exception message does not contain 'Connection refused'");
 
-            File[] transferredFiles = sftpServer.getRemoteDir().listFiles();
-            assertNotNull(transferredFiles, "SFTP server remote directory listing should not be null");
-            assertEquals(0, transferredFiles.length, "No files should be transferred to SFTP server");
+            File remoteDir = sftpServer.getRemoteDir();
+            assertNoFilesInDir(remoteDir, DIR_TYPE_REMOTE);
         }
     }
 }

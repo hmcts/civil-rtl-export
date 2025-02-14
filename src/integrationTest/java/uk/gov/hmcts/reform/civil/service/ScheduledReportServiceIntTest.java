@@ -16,10 +16,8 @@ import uk.gov.hmcts.reform.civil.repository.JudgmentRepository;
 import uk.gov.hmcts.reform.civil.util.LocalSftpServer;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.DIR_TYPE_REMOTE;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertFileInDir;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertNoFilesInDir;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertNumFilesInDir;
 
 @SpringBootTest
 @ActiveProfiles("itest")
@@ -79,19 +81,23 @@ class ScheduledReportServiceIntTest {
             scheduledReportService.generateReport(NOT_TEST, null, null);
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNumFilesInRemoteDir(remoteDir, 4);
-            assertFileInRemoteDir(remoteDir,
-                                  SERVICE_ID_1 + FILE_EXTENSION_HEADER,
-                                  getExpectedHeaderFileContent(currentDate));
-            assertFileInRemoteDir(remoteDir,
-                                  SERVICE_ID_1 + FILE_EXTENSION_DETAILS,
-                                  getExpectedDetailsFileContent("1", new BigDecimal("1.11"), LocalDate.of(2024, 1, 1)));
-            assertFileInRemoteDir(remoteDir,
-                                  SERVICE_ID_2 + FILE_EXTENSION_HEADER,
-                                  getExpectedHeaderFileContent(currentDate));
-            assertFileInRemoteDir(remoteDir,
-                                  SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
-                                  getExpectedDetailsFileContent("3", new BigDecimal("3.33"), LocalDate.of(2024, 3, 3)));
+            assertNumFilesInDir(remoteDir, DIR_TYPE_REMOTE, 4);
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            SERVICE_ID_1 + FILE_EXTENSION_HEADER,
+                            List.of(getExpectedHeaderFileContent(currentDate)));
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            SERVICE_ID_1 + FILE_EXTENSION_DETAILS,
+                            getExpectedDetailsFileContent("1", new BigDecimal("1.11"), LocalDate.of(2024, 1, 1)));
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            SERVICE_ID_2 + FILE_EXTENSION_HEADER,
+                            List.of(getExpectedHeaderFileContent(currentDate)));
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
+                            getExpectedDetailsFileContent("3", new BigDecimal("3.33"), LocalDate.of(2024, 3, 3)));
             assertReportedToRtlDateNotNull(List.of(1L, 3L));
         }
     }
@@ -103,7 +109,7 @@ class ScheduledReportServiceIntTest {
             scheduledReportService.generateReport(IS_TEST, asOf, serviceId);
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNoFilesInRemoteDir(remoteDir);
+            assertNoFilesInDir(remoteDir, DIR_TYPE_REMOTE);
 
             if (asOf == null) {
                 assertReportedToRtlDateNull(ids);
@@ -121,13 +127,15 @@ class ScheduledReportServiceIntTest {
             scheduledReportService.generateReport(NOT_TEST, null, SERVICE_ID_2);
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNumFilesInRemoteDir(remoteDir, 2);
-            assertFileInRemoteDir(remoteDir,
-                                  SERVICE_ID_2 + FILE_EXTENSION_HEADER,
-                                  getExpectedHeaderFileContent(currentDate));
-            assertFileInRemoteDir(remoteDir,
-                                  SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
-                                  getExpectedDetailsFileContent("3", new BigDecimal("3.33"), LocalDate.of(2024, 3, 3)));
+            assertNumFilesInDir(remoteDir, DIR_TYPE_REMOTE, 2);
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            SERVICE_ID_2 + FILE_EXTENSION_HEADER,
+                            List.of(getExpectedHeaderFileContent(currentDate)));
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
+                            getExpectedDetailsFileContent("3", new BigDecimal("3.33"), LocalDate.of(2024, 3, 3)));
             assertReportedToRtlDateNotNull(List.of(3L));
         }
     }
@@ -141,19 +149,23 @@ class ScheduledReportServiceIntTest {
             scheduledReportService.generateReport(NOT_TEST, AS_OF_DATE_TIME, null);
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNumFilesInRemoteDir(remoteDir, 4);
-            assertFileInRemoteDir(remoteDir,
-                                  baseFileName + SERVICE_ID_1 + FILE_EXTENSION_HEADER,
-                                  getExpectedHeaderFileContent(headerDate));
-            assertFileInRemoteDir(remoteDir,
-                                  baseFileName + SERVICE_ID_1 + FILE_EXTENSION_DETAILS,
-                                  getExpectedDetailsFileContent("2", new BigDecimal("2.22"), LocalDate.of(2024, 2, 2)));
-            assertFileInRemoteDir(remoteDir,
-                                  baseFileName + SERVICE_ID_2 + FILE_EXTENSION_HEADER,
-                                  getExpectedHeaderFileContent(headerDate));
-            assertFileInRemoteDir(remoteDir,
-                                  baseFileName + SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
-                                  getExpectedDetailsFileContent("4", new BigDecimal("4.44"), LocalDate.of(2024, 4, 4)));
+            assertNumFilesInDir(remoteDir, DIR_TYPE_REMOTE, 4);
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            baseFileName + SERVICE_ID_1 + FILE_EXTENSION_HEADER,
+                            List.of(getExpectedHeaderFileContent(headerDate)));
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            baseFileName + SERVICE_ID_1 + FILE_EXTENSION_DETAILS,
+                            getExpectedDetailsFileContent("2", new BigDecimal("2.22"), LocalDate.of(2024, 2, 2)));
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            baseFileName + SERVICE_ID_2 + FILE_EXTENSION_HEADER,
+                            List.of(getExpectedHeaderFileContent(headerDate)));
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            baseFileName + SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
+                            getExpectedDetailsFileContent("4", new BigDecimal("4.44"), LocalDate.of(2024, 4, 4)));
             assertReportedToRtlDate(List.of(2L, 4L), AS_OF_DATE_TIME);
         }
     }
@@ -167,13 +179,14 @@ class ScheduledReportServiceIntTest {
             scheduledReportService.generateReport(NOT_TEST, AS_OF_DATE_TIME, SERVICE_ID_2);
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNumFilesInRemoteDir(remoteDir, 2);
-            assertFileInRemoteDir(remoteDir,
-                                  baseFileName + SERVICE_ID_2 + FILE_EXTENSION_HEADER,
-                                  getExpectedHeaderFileContent(headerDate));
-            assertFileInRemoteDir(remoteDir,
-                                  baseFileName + SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
-                                  getExpectedDetailsFileContent("4", new BigDecimal("4.44"), LocalDate.of(2024, 4, 4)));
+            assertNumFilesInDir(remoteDir, DIR_TYPE_REMOTE, 2);
+            assertFileInDir(remoteDir,
+                            DIR_TYPE_REMOTE,
+                            baseFileName + SERVICE_ID_2 + FILE_EXTENSION_HEADER,
+                            List.of(getExpectedHeaderFileContent(headerDate)));
+            assertFileInDir(remoteDir,
+                            baseFileName + SERVICE_ID_2 + FILE_EXTENSION_DETAILS,
+                            getExpectedDetailsFileContent("4", new BigDecimal("4.44"), LocalDate.of(2024, 4, 4)));
             assertReportedToRtlDate(List.of(4L), AS_OF_DATE_TIME);
         }
     }
@@ -182,9 +195,9 @@ class ScheduledReportServiceIntTest {
         return "1         " + date.format(DATE_FORMAT);
     }
 
-    private String getExpectedDetailsFileContent(String num, BigDecimal orderTotal, LocalDate orderDate) {
+    private List<String> getExpectedDetailsFileContent(String num, BigDecimal orderTotal, LocalDate orderDate) {
         // Repeated num character in test data utilised to reduce number of parameters
-        return num.repeat(3)
+        String fileLine =  num.repeat(3)
             + "CASE" + num.repeat(4)
             + String.format("%011.2f", orderTotal)
             + orderDate.format(DATE_FORMAT)
@@ -198,32 +211,7 @@ class ScheduledReportServiceIntTest {
             + "                                   "
             + "AA" + num + " " + num + "AA "
             + "        ";
-    }
-
-    private void assertNoFilesInRemoteDir(File remoteDir) {
-        assertNumFilesInRemoteDir(remoteDir, 0);
-    }
-
-    private void assertNumFilesInRemoteDir(File remoteDir, int numFiles) {
-        File[] filesInDir = remoteDir.listFiles();
-        assertNotNull(filesInDir, "Remote directory listing should not be null");
-        assertEquals(numFiles, filesInDir.length, "Remote directory contains unexpected number of files");
-    }
-
-    private void assertFileInRemoteDir(File remoteDir, String fileName, String fileContent) throws IOException {
-        FilenameFilter filter = (directory, name) -> name.endsWith(fileName);
-
-        File[] filesInDir = remoteDir.listFiles(filter);
-        assertNotNull(filesInDir, "Remote directory listing should not be null");
-        assertEquals(1, filesInDir.length, "Remote directory should contain file " + fileName);
-
-        List<String> fileLines = Files.readAllLines(filesInDir[0].toPath());
-        assertEquals(1,
-                     fileLines.size(),
-                     fileName + " in Remote directory contains unexpected number of lines");
-        assertEquals(fileContent,
-                     fileLines.getFirst(),
-                     fileName + " in Remote directory does not contain expected content");
+        return List.of(fileLine);
     }
 
     private void assertReportedToRtlDate(List<Long> ids, LocalDateTime date) {

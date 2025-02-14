@@ -14,13 +14,13 @@ import uk.gov.hmcts.reform.civil.util.LocalSftpServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.DIR_TYPE_REMOTE;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertFileNamesInDir;
 
 @SpringBootTest
 @ActiveProfiles("itest")
@@ -58,7 +58,7 @@ class ScheduledTaskRunnerIntTest {
             scheduledTaskRunner.run(TASK_NAME_SCHEDULED_REPORT);
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertFilesInRemoteDir(remoteDir, List.of("IT01.hdr", "IT01.det", "IT02.hdr", "IT02.det"));
+            assertFileNamesInDir(remoteDir, DIR_TYPE_REMOTE, List.of("IT01.hdr", "IT01.det", "IT02.hdr", "IT02.det"));
             assertReportedToRtlDateNotNull(List.of(1L, 3L));
         }
     }
@@ -68,19 +68,6 @@ class ScheduledTaskRunnerIntTest {
         assertTrue(judgmentRepository.existsById(5L), "Judgment should exist before housekeeping");
         scheduledTaskRunner.run(TASK_NAME_HOUSEKEEPING);
         assertFalse(judgmentRepository.existsById(5L), "Judgment should not exist after housekeeping");
-    }
-
-    private void assertFilesInRemoteDir(File remoteDir, List<String> fileNames) {
-        String[] filesInDir = remoteDir.list();
-        assertNotNull(filesInDir, "Remote directory listing should not be null");
-
-        assertEquals(fileNames.size(), filesInDir.length, "Remote directory contains unexpected number of files");
-
-        List<String> remoteFiles = Arrays.asList(filesInDir);
-        for (String fileName : fileNames) {
-            assertTrue(remoteFiles.stream().anyMatch(name -> name.endsWith(fileName)),
-                       "Remote directory should contain file " + fileName);
-        }
     }
 
     private void assertReportedToRtlDateNotNull(List<Long> ids) {

@@ -21,19 +21,18 @@ import uk.gov.hmcts.reform.civil.util.LocalSftpServer;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.DIR_TYPE_REMOTE;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertFileNamesInDir;
+import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertNoFilesInDir;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -84,7 +83,7 @@ class ReportControllerIntTest {
                 .andExpect(content().string(RESPONSE_SUCCESS));
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertFilesInRemoteDir(remoteDir, List.of("IT01.hdr", "IT01.det", "IT03.hdr", "IT03.det"));
+            assertFileNamesInDir(remoteDir, DIR_TYPE_REMOTE, List.of("IT01.hdr", "IT01.det", "IT03.hdr", "IT03.det"));
         }
     }
 
@@ -96,7 +95,7 @@ class ReportControllerIntTest {
                 .andExpect(content().string(RESPONSE_SUCCESS));
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertFilesInRemoteDir(remoteDir, List.of("IT02.hdr", "IT02.det", "IT04.hdr", "IT04.det"));
+            assertFileNamesInDir(remoteDir, DIR_TYPE_REMOTE, List.of("IT02.hdr", "IT02.det", "IT04.hdr", "IT04.det"));
         }
     }
 
@@ -108,7 +107,7 @@ class ReportControllerIntTest {
                 .andExpect(content().string(RESPONSE_SUCCESS));
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertFilesInRemoteDir(remoteDir, List.of("IT03.hdr", "IT03.det"));
+            assertFileNamesInDir(remoteDir, DIR_TYPE_REMOTE, List.of("IT03.hdr", "IT03.det"));
         }
     }
 
@@ -127,7 +126,7 @@ class ReportControllerIntTest {
                 .andExpect(content().string(RESPONSE_SUCCESS));
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertFilesInRemoteDir(remoteDir, List.of("IT04.hdr", "IT04.det"));
+            assertFileNamesInDir(remoteDir, DIR_TYPE_REMOTE, List.of("IT04.hdr", "IT04.det"));
         }
     }
 
@@ -139,7 +138,7 @@ class ReportControllerIntTest {
                 .andExpect(content().string(RESPONSE_SUCCESS));
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNoFilesInRemoteDir(remoteDir);
+            assertNoFilesInDir(remoteDir, DIR_TYPE_REMOTE);
         }
     }
 
@@ -152,7 +151,7 @@ class ReportControllerIntTest {
                 .andExpect(content().string(RESPONSE_SUCCESS));
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNoFilesInRemoteDir(remoteDir);
+            assertNoFilesInDir(remoteDir, DIR_TYPE_REMOTE);
         }
     }
 
@@ -165,7 +164,7 @@ class ReportControllerIntTest {
                 .andExpect(content().string(equalTo("Report failed")));
 
             File remoteDir = sftpServer.getRemoteDir();
-            assertNoFilesInRemoteDir(remoteDir);
+            assertNoFilesInDir(remoteDir, DIR_TYPE_REMOTE);
         }
     }
 
@@ -184,23 +183,6 @@ class ReportControllerIntTest {
         }
 
         return queryParamMap;
-    }
-
-    private void assertNoFilesInRemoteDir(File remoteDir) {
-        assertFilesInRemoteDir(remoteDir, Collections.emptyList());
-    }
-
-    private void assertFilesInRemoteDir(File remoteDir, List<String> fileNames) {
-        String[] filesInDir = remoteDir.list();
-        assertNotNull(filesInDir, "Remote directory listing should not be null");
-
-        assertEquals(fileNames.size(), filesInDir.length, "Remote directory contains unexpected number of files");
-
-        List<String> remoteFiles = Arrays.asList(filesInDir);
-        for (String fileName : fileNames) {
-            assertTrue(remoteFiles.stream().anyMatch(name -> name.endsWith(fileName)),
-                       "Remote directory should contain file " + fileName);
-        }
     }
 
     private static Stream<Arguments> reportTestModeParams() {
