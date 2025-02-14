@@ -5,12 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.civil.service.ScheduledReportService;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,5 +83,15 @@ class ScheduledReportTaskTest {
         scheduledReportTask.run();
 
         verify(mockScheduledReportService).generateReport(NOT_TEST, DATE_TIME_AS_OF, null);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"A", "AA", "AAA", "AAAAA", "aaaa", "1", "11", "111", "11111", "_"})
+    void testScheduledReportTaskInvalidServiceId(String serviceId) {
+        scheduledReportTask.setServiceId(serviceId);
+
+        scheduledReportTask.run();
+
+        verify(mockScheduledReportService, never()).generateReport(anyBoolean(), any(LocalDateTime.class), anyString());
     }
 }
