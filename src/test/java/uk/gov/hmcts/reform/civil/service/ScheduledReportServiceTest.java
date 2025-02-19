@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.civil.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
@@ -34,135 +34,199 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ScheduledReportServiceTest {
 
-    private static final boolean NOT_RERUN = false;
-    private static final boolean IS_RERUN = true;
     private static final boolean NOT_TEST = false;
     private static final boolean IS_TEST = true;
+
+    private static final LocalDateTime DATE_TIME_AS_OF = LocalDateTime.of(2025, 2, 17, 18, 22, 4);
 
     private static final String SERVICE_ID_1 = "UT01";
     private static final String SERVICE_ID_2 = "UT02";
 
     @Mock
-    private JudgmentRepository judgmentRepository;
+    private JudgmentRepository mockJudgmentRepository;
 
     @Mock
-    private JudgmentFileService judgmentFileService;
+    private JudgmentFileService mockJudgmentFileService;
 
     private ScheduledReportService scheduledReportService;
 
     @BeforeEach
     void setUp() {
-        scheduledReportService = new ScheduledReportService(judgmentRepository, judgmentFileService);
-    }
-
-    @Test
-    void testNoJudgmentsNoServiceId() {
-        when(judgmentRepository.findForUpdate(NOT_RERUN, null)).thenReturn(Collections.emptyList());
-
-        scheduledReportService.generateReport(NOT_TEST, null, null);
-
-        verify(judgmentRepository).findForUpdate(NOT_RERUN, null);
-        verify(judgmentFileService, never())
-            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), anyString(), anyBoolean());
-        verify(judgmentRepository, never()).saveAll(anyList());
-    }
-
-    @Test
-    void testNoJudgmentsServiceId() {
-        when(judgmentRepository.findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1))
-            .thenReturn(Collections.emptyList());
-
-        scheduledReportService.generateReport(NOT_TEST, null, SERVICE_ID_1);
-
-        verify(judgmentRepository).findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1);
-        verify(judgmentFileService, never())
-            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), anyString(), anyBoolean());
-        verify(judgmentRepository, never()).saveAll(anyList());
-    }
-
-    @Test
-    void testJudgmentsNoServiceId() {
-        List<Judgment> judgments = new ArrayList<>();
-
-        Judgment judgment1 = new Judgment();
-        judgment1.setServiceId(SERVICE_ID_1);
-        judgments.add(judgment1);
-
-        Judgment judgment2 = new Judgment();
-        judgment2.setServiceId(SERVICE_ID_2);
-        judgments.add(judgment2);
-
-        when(judgmentRepository.findForUpdate(NOT_RERUN, null)).thenReturn(judgments);
-
-        scheduledReportService.generateReport(NOT_TEST, null, null);
-
-        assertNotNull(judgment1.getReportedToRtl(), "Judgment1 reported to RTL date should not be null");
-        assertNotNull(judgment2.getReportedToRtl(), "Judgment2 reported to RTL date should not be null");
-
-        verify(judgmentRepository).findForUpdate(NOT_RERUN, null);
-        verify(judgmentFileService)
-            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(NOT_TEST));
-        verify(judgmentFileService)
-            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_2), eq(NOT_TEST));
-        verify(judgmentRepository, times(2)).saveAll(anyList());
-    }
-
-    @Test
-    void testJudgmentsServiceId() {
-        List<Judgment> judgments = new ArrayList<>();
-
-        Judgment judgment = new Judgment();
-        judgment.setServiceId(SERVICE_ID_1);
-        judgments.add(judgment);
-
-        when(judgmentRepository.findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1)).thenReturn(judgments);
-
-        scheduledReportService.generateReport(NOT_TEST, null, SERVICE_ID_1);
-
-        assertNotNull(judgment.getReportedToRtl(), "Judgment reported to RTL date should not be null");
-
-        verify(judgmentRepository).findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1);
-        verify(judgmentFileService)
-            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(NOT_TEST));
-        verify(judgmentRepository).saveAll(anyList());
+        scheduledReportService = new ScheduledReportService(mockJudgmentRepository, mockJudgmentFileService);
     }
 
     @ParameterizedTest
-    @MethodSource("rerunOrTestParams")
-    void testJudgmentsRerunOrTest(LocalDateTime asOf, boolean test) {
-        List<Judgment> judgments = new ArrayList<>();
+    @MethodSource("asOfServiceIdParams")
+    void testNoJudgments(LocalDateTime asOf, String serviceId) {
+        setUpExpectedFindForRtlBehaviour(asOf, serviceId, Collections.emptyList());
 
-        Judgment judgment = new Judgment();
-        judgment.setServiceId(SERVICE_ID_1);
-        judgment.setReportedToRtl(asOf);
+        scheduledReportService.generateReport(NOT_TEST, asOf, serviceId);
+
+        verifyExpectedFindForRtlBehaviour(asOf, serviceId);
+        verify(mockJudgmentFileService, never())
+            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), anyString(), anyBoolean());
+        verify(mockJudgmentRepository, never()).saveAll(anyList());
+    }
+
+    @ParameterizedTest
+    @MethodSource("asOfServiceIdParams")
+    void testJudgments(LocalDateTime asOf, String serviceId) {
+        Judgment judgment = createJudgment(SERVICE_ID_1, asOf);
+
+        List<Judgment> judgments = new ArrayList<>();
         judgments.add(judgment);
 
+        setUpExpectedFindForRtlBehaviour(asOf, serviceId, judgments);
+
+        scheduledReportService.generateReport(NOT_TEST, asOf, serviceId);
+
         if (asOf == null) {
-            when(judgmentRepository.findForUpdate(NOT_RERUN, null)).thenReturn(judgments);
+            assertNotNull(judgment.getReportedToRtl(), "Judgment reported to RTL date should not be null");
+            verify(mockJudgmentFileService)
+                .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(false));
+            verify(mockJudgmentRepository).saveAll(anyList());
         } else {
-            when(judgmentRepository.findForUpdate(IS_RERUN, asOf)).thenReturn(judgments);
+            assertEquals(asOf, judgment.getReportedToRtl(), "Judgment reported to RTL date should not be changed");
+            verify(mockJudgmentFileService)
+                .createAndSendJudgmentFile(anyList(), eq(asOf), eq(SERVICE_ID_1), eq(false));
+            verify(mockJudgmentRepository, never()).saveAll(anyList());
         }
 
-        scheduledReportService.generateReport(test, asOf, null);
+        verifyExpectedFindForRtlBehaviour(asOf, serviceId);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @MethodSource("asOfParams")
+    void testJudgmentsMultipleServiceIds(LocalDateTime asOf) {
+        List<Judgment> judgments = new ArrayList<>();
+        judgments.add(createJudgment(1L, SERVICE_ID_1));
+        judgments.add(createJudgment(2L, SERVICE_ID_2));
+
+        setUpExpectedFindForRtlBehaviour(asOf, null, judgments);
+
+        scheduledReportService.generateReport(NOT_TEST, asOf, null);
+
+        if (asOf == null) {
+            for (Judgment judgment : judgments) {
+                assertNotNull(judgment.getReportedToRtl(),
+                              "Judgment " + judgment.getId() + " reported to RTL date should not be null");
+            }
+            verify(mockJudgmentFileService)
+                .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(NOT_TEST));
+            verify(mockJudgmentFileService)
+                .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_2), eq(NOT_TEST));
+            verify(mockJudgmentRepository, times(2)).saveAll(anyList());
+        } else {
+            for (Judgment judgment : judgments) {
+                assertEquals(DATE_TIME_AS_OF,
+                             judgment.getReportedToRtl(),
+                             "Judgment " + judgment.getId() + " reported to RTL date should not have changed");
+            }
+            verify(mockJudgmentFileService)
+                .createAndSendJudgmentFile(anyList(), eq(DATE_TIME_AS_OF), eq(SERVICE_ID_1), eq(NOT_TEST));
+            verify(mockJudgmentFileService)
+                .createAndSendJudgmentFile(anyList(), eq(DATE_TIME_AS_OF), eq(SERVICE_ID_2), eq(NOT_TEST));
+            verify(mockJudgmentRepository, never()).saveAll(anyList());
+        }
+
+        verifyExpectedFindForRtlBehaviour(asOf, null);
+    }
+
+    @ParameterizedTest
+    @MethodSource("asOfServiceIdParams")
+    void testNoJudgmentsTestMode(LocalDateTime asOf, String serviceId) {
+        setUpExpectedFindForRtlBehaviour(asOf, serviceId, Collections.emptyList());
+
+        scheduledReportService.generateReport(IS_TEST, asOf, serviceId);
+
+        verifyExpectedFindForRtlBehaviour(asOf, serviceId);
+        verify(mockJudgmentFileService, never())
+            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), anyString(), anyBoolean());
+        verify(mockJudgmentRepository, never()).saveAll(anyList());
+    }
+
+    @ParameterizedTest
+    @MethodSource("asOfServiceIdParams")
+    void testJudgmentsTestMode(LocalDateTime asOf, String serviceId) {
+        Judgment judgment = createJudgment(SERVICE_ID_1, asOf);
+
+        List<Judgment> judgments = new ArrayList<>();
+        judgments.add(judgment);
+
+        setUpExpectedFindForRtlBehaviour(asOf, serviceId, judgments);
+
+        scheduledReportService.generateReport(IS_TEST, asOf, serviceId);
 
         if (asOf == null) {
             assertNull(judgment.getReportedToRtl(), "Judgment reported to RTL date should be null");
-            verify(judgmentRepository).findForUpdate(NOT_RERUN, null);
-            verify(judgmentFileService)
-                .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(test));
         } else {
             assertEquals(asOf, judgment.getReportedToRtl(), "Judgment reported to RTL date should not be changed");
-            verify(judgmentRepository).findForUpdate(IS_RERUN, asOf);
-            verify(judgmentFileService).createAndSendJudgmentFile(anyList(), eq(asOf), eq(SERVICE_ID_1), eq(test));
         }
-        verify(judgmentRepository, never()).saveAll(anyList());
+
+        verifyExpectedFindForRtlBehaviour(asOf, serviceId);
+        verify(mockJudgmentFileService)
+            .createAndSendJudgmentFile(anyList(), any(LocalDateTime.class), eq(SERVICE_ID_1), eq(true));
+        verify(mockJudgmentRepository, never()).saveAll(anyList());
     }
 
-    private static Stream<Arguments> rerunOrTestParams() {
+    private Judgment createJudgment(String serviceId, LocalDateTime reportedToRtl) {
+        Judgment judgment = new Judgment();
+        judgment.setServiceId(serviceId);
+        judgment.setReportedToRtl(reportedToRtl);
+        return judgment;
+    }
+
+    private Judgment createJudgment(long id, String serviceId) {
+        Judgment judgment = createJudgment(serviceId, DATE_TIME_AS_OF);
+        judgment.setId(id);
+        return judgment;
+    }
+
+    private void setUpExpectedFindForRtlBehaviour(LocalDateTime asOf, String serviceId, List<Judgment> judgments) {
+        if (asOf == null) {
+            if (serviceId == null) {
+                when(mockJudgmentRepository.findForRtl()).thenReturn(judgments);
+            } else {
+                when(mockJudgmentRepository.findForRtlServiceId(serviceId)).thenReturn(judgments);
+            }
+        } else {
+            if (serviceId == null) {
+                when(mockJudgmentRepository.findForRtlRerun(asOf)).thenReturn(judgments);
+            } else {
+                when(mockJudgmentRepository.findForRtlServiceIdRerun(asOf, serviceId)).thenReturn(judgments);
+            }
+        }
+    }
+
+    private void verifyExpectedFindForRtlBehaviour(LocalDateTime asOf, String serviceId) {
+        if (asOf == null) {
+            if (serviceId == null) {
+                verify(mockJudgmentRepository).findForRtl();
+            } else {
+                verify(mockJudgmentRepository).findForRtlServiceId(serviceId);
+            }
+        } else {
+            if (serviceId == null) {
+                verify(mockJudgmentRepository).findForRtlRerun(asOf);
+            } else {
+                verify(mockJudgmentRepository).findForRtlServiceIdRerun(asOf, serviceId);
+            }
+        }
+    }
+
+    private static Stream<Arguments> asOfServiceIdParams() {
         return Stream.of(
-            arguments(null, IS_TEST),
-            arguments(LocalDateTime.of(2025, 1, 30, 10, 30, 0), NOT_TEST),
-            arguments(LocalDateTime.of(2025, 1, 30, 15, 6, 1), IS_TEST)
+          arguments(null, null),
+          arguments(DATE_TIME_AS_OF, null),
+          arguments(null, SERVICE_ID_1),
+          arguments(DATE_TIME_AS_OF, SERVICE_ID_1)
+        );
+    }
+
+    private static Stream<Arguments> asOfParams() {
+        return Stream.of(
+            arguments(DATE_TIME_AS_OF)
         );
     }
 }

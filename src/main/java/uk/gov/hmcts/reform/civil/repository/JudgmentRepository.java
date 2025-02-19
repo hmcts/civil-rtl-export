@@ -18,19 +18,11 @@ public interface JudgmentRepository extends JpaRepository<Judgment, Long> {
 
     String PARAM_DATE_OF_DELETION = "dateOfDeletion";
 
-    default List<Judgment> findForUpdate(boolean rerun, LocalDateTime asOf) {
-        return rerun ? findForRtlRerun(asOf) : findForRtl();
-    }
-
     @Query("SELECT j FROM Judgment j WHERE j.reportedToRtl IS NULL")
     List<Judgment> findForRtl();
 
     @Query("SELECT j FROM Judgment j WHERE j.reportedToRtl = :asOf")
     List<Judgment> findForRtlRerun(@Param(PARAM_AS_OF) LocalDateTime asOf);
-
-    default List<Judgment> findForUpdateByServiceId(boolean rerun, LocalDateTime asOf, String serviceId) {
-        return rerun ? findForRtlServiceIdRerun(asOf, serviceId) : findForRtlServiceId(serviceId);
-    }
 
     @Query("SELECT j FROM Judgment j WHERE j.reportedToRtl IS NULL AND j.serviceId = :serviceId")
     List<Judgment> findForRtlServiceId(@Param(PARAM_SERVICE_ID) String serviceId);

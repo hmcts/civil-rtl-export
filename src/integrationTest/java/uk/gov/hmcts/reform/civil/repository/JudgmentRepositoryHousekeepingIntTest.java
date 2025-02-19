@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.civil.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.civil.service.task.ScheduledTaskRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,9 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(
+    type = FilterType.ASSIGNABLE_TYPE,
+    classes = ScheduledTaskRunner.class)
+)
 @ActiveProfiles("itest")
-@Transactional
 @Sql(scripts = {"judgment_repository_housekeeping_int_test.sql"})
 class JudgmentRepositoryHousekeepingIntTest {
 

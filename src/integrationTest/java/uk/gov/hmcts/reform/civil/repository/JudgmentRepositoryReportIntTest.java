@@ -1,36 +1,35 @@
 package uk.gov.hmcts.reform.civil.repository;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
+import uk.gov.hmcts.reform.civil.service.task.ScheduledTaskRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringBootTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(
+    type = FilterType.ASSIGNABLE_TYPE,
+    classes = ScheduledTaskRunner.class)
+)
 @ActiveProfiles("itest")
-@Transactional
 @Sql(scripts = {"judgment_repository_report_int_test.sql"})
 class JudgmentRepositoryReportIntTest {
 
     private static final String SERVICE_ID_1 = "Sid1";
-
-    private static final boolean IS_RERUN = true;
-    private static final boolean NOT_RERUN = false;
+    private static final String SERVICE_ID_2 = "Sid2";
 
     private static final String JUDGMENT_ID_1 = "JUDG-1111-1111";
     private static final String JUDGMENT_ID_2 = "JUDG-2222-2222";
@@ -44,82 +43,113 @@ class JudgmentRepositoryReportIntTest {
         this.judgmentRepository = judgmentRepository;
     }
 
-    @ParameterizedTest
-    @MethodSource("findForUpdateParams")
-    void testFindForUpdate(boolean rerun, LocalDateTime asOf, List<String> expectedJudgmentIds) {
-        List<Judgment> results = judgmentRepository.findForUpdate(rerun, asOf);
-        assertJudgments(results, expectedJudgmentIds);
+    @Test
+    void testFindForRtl() {
+        List<Judgment> expectedJudgments = new ArrayList<>();
+        expectedJudgments.add(createExpectedJudgment(SERVICE_ID_1, JUDGMENT_ID_1));
+        expectedJudgments.add(createExpectedJudgment(SERVICE_ID_2, JUDGMENT_ID_3));
+
+        List<Judgment> results = judgmentRepository.findForRtl();
+        assertJudgments(results, expectedJudgments);
     }
 
     @Test
-    void testFindForUpdateNoUnsentJudgments() {
-        // Change test data so there are no judgments with a null reported to RTL date
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        List<Judgment> judgments = judgmentRepository.findAllById(List.of(1L, 3L));
-        judgments.forEach(judgment -> judgment.setReportedToRtl(currentDateTime));
-        judgmentRepository.saveAll(judgments);
-
-        List<Judgment> results = judgmentRepository.findForUpdate(NOT_RERUN, null);
+    @Sql(scripts = {"judgment_repository_report_int_test_all_reported_to_rtl.sql"})
+    void testFindForRtlNoJudgments() {
+        List<Judgment> results = judgmentRepository.findForRtl();
         assertJudgments(results, Collections.emptyList());
-    }
-
-    @ParameterizedTest
-    @MethodSource("findForUpdateByServiceIdParams")
-    void testFindForUpdateByServiceId(boolean rerun, LocalDateTime asOf, List<String> expectedJudgmentIds) {
-        List<Judgment> results = judgmentRepository.findForUpdateByServiceId(rerun, asOf, SERVICE_ID_1);
-        assertJudgments(results, expectedJudgmentIds);
     }
 
     @Test
-    void testFindForUpdateByServiceIdNoUnsentJudgments() {
-        // Change test data so that there are no judgments for SERVICE_ID_1 with a null reported to RTL date
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        List<Judgment> judgments = judgmentRepository.findAllById(List.of(1L));
-        judgments.forEach(judgment -> judgment.setReportedToRtl(currentDateTime));
-        judgmentRepository.saveAll(judgments);
+    void testFindForRtlRerun() {
+        LocalDateTime asOf = LocalDate.now().minusDays(1).atStartOfDay();
 
-        List<Judgment> results = judgmentRepository.findForUpdateByServiceId(NOT_RERUN, null, SERVICE_ID_1);
+        List<Judgment> expectedJudgments = new ArrayList<>();
+        expectedJudgments.add(createExpectedJudgment(SERVICE_ID_1, JUDGMENT_ID_2, asOf));
+        expectedJudgments.add(createExpectedJudgment(SERVICE_ID_2, JUDGMENT_ID_4, asOf));
+
+        List<Judgment> results = judgmentRepository.findForRtlRerun(asOf);
+        assertJudgments(results, expectedJudgments);
+    }
+
+    @Test
+    void testFindForRtlRerunNoJudgments() {
+        LocalDateTime asOf = LocalDate.now().minusDays(2).atStartOfDay();
+
+        List<Judgment> results = judgmentRepository.findForRtlRerun(asOf);
         assertJudgments(results, Collections.emptyList());
     }
 
-    private void assertJudgments(List<Judgment> judgments, List<String> expectedJudgmentIds) {
-        assertNotNull(judgments, "List of judgments should not be null");
-        assertEquals(expectedJudgmentIds.size(), judgments.size(), "Unexpected number of judgments returned");
+    @Test
+    void testFindForRtlServiceId() {
+        List<Judgment> expectedJudgments = new ArrayList<>();
+        expectedJudgments.add(createExpectedJudgment(SERVICE_ID_1, JUDGMENT_ID_1));
 
-        int index = 0;
-        for (Judgment judgment : judgments) {
-            assertEquals(expectedJudgmentIds.get(index), judgment.getJudgmentId(), "Unexpected judgment id");
-            index++;
+        List<Judgment> results = judgmentRepository.findForRtlServiceId(SERVICE_ID_1);
+        assertJudgments(results, expectedJudgments);
+    }
+
+    @Test
+    @Sql(scripts = {"judgment_repository_report_int_test_all_reported_to_rtl.sql"})
+    void testFindForRtlServiceIdNoJudgments() {
+        List<Judgment> results = judgmentRepository.findForRtlServiceId(SERVICE_ID_1);
+        assertJudgments(results, Collections.emptyList());
+    }
+
+    @Test
+    void testFindForRtlServiceIdRerun() {
+        LocalDateTime asOf = LocalDate.now().minusDays(1).atStartOfDay();
+
+        List<Judgment> expectedJudgments = new ArrayList<>();
+        expectedJudgments.add(createExpectedJudgment(SERVICE_ID_2, JUDGMENT_ID_4, asOf));
+
+        List<Judgment> results = judgmentRepository.findForRtlServiceIdRerun(asOf, SERVICE_ID_2);
+        assertJudgments(results, expectedJudgments);
+    }
+
+    @Test
+    void testFindForRtlServiceIdRerunNoJudgments() {
+        LocalDateTime asOf = LocalDate.now().minusDays(2).atStartOfDay();
+
+        List<Judgment> results = judgmentRepository.findForRtlServiceIdRerun(asOf, SERVICE_ID_2);
+        assertJudgments(results, Collections.emptyList());
+    }
+
+    private Judgment createExpectedJudgment(String serviceId, String judgmentId, LocalDateTime reportedToRtl) {
+        Judgment judgment = createExpectedJudgment(serviceId, judgmentId);
+        judgment.setReportedToRtl(reportedToRtl);
+        return judgment;
+    }
+
+    private Judgment createExpectedJudgment(String serviceId, String judgmentId) {
+        Judgment judgment = new Judgment();
+
+        judgment.setServiceId(serviceId);
+        judgment.setJudgmentId(judgmentId);
+
+        return judgment;
+    }
+
+    private void assertJudgments(List<Judgment> results, List<Judgment> expectedJudgments) {
+        assertNotNull(results, "List of judgments returned should not be null");
+        assertEquals(results.size(), expectedJudgments.size(), "Unexpected number of judgments returned");
+
+        for (int index = 0; index < expectedJudgments.size(); index++) {
+            assertJudgment(results.get(index), expectedJudgments.get(index));
         }
     }
 
-    private static Stream<Arguments> findForUpdateParams() {
-        LocalDateTime oneDayAgo = LocalDate.now().minusDays(1).atStartOfDay();
-        LocalDateTime twoDaysAgo = LocalDate.now().minusDays(2).atStartOfDay();
+    private void assertJudgment(Judgment judgment, Judgment expectedJudgment) {
+        assertEquals(expectedJudgment.getServiceId(), judgment.getServiceId(), "Judgment has unexpected service id");
+        assertEquals(expectedJudgment.getJudgmentId(), judgment.getJudgmentId(), "Judgment has unexpected judgment id");
 
-        return Stream.of(
-            arguments(NOT_RERUN, null, List.of(JUDGMENT_ID_1, JUDGMENT_ID_3)),
-            // The asOf date is ignored if rerun is false, so results will be identical to when asOf is null
-            arguments(NOT_RERUN, oneDayAgo, List.of(JUDGMENT_ID_1, JUDGMENT_ID_3)),
-            // There should always be an asOf date if rerun is true, so this combination should never occur
-            arguments(IS_RERUN, null, Collections.emptyList()),
-            arguments(IS_RERUN, oneDayAgo, List.of(JUDGMENT_ID_2, JUDGMENT_ID_4)),
-            arguments(IS_RERUN, twoDaysAgo, Collections.emptyList())
-        );
-    }
-
-    private static Stream<Arguments> findForUpdateByServiceIdParams() {
-        LocalDateTime oneDayAgo = LocalDate.now().minusDays(1).atStartOfDay();
-        LocalDateTime twoDaysAgo = LocalDate.now().minusDays(2).atStartOfDay();
-
-        return Stream.of(
-            arguments(NOT_RERUN, null, List.of(JUDGMENT_ID_1)),
-            // The asOf date is ignored if rerun is false, so results will be identical to when asOf is null
-            arguments(NOT_RERUN, oneDayAgo, List.of(JUDGMENT_ID_1)),
-            // There should always be an asOf date if rerun is true, so this combination should never occur
-            arguments(IS_RERUN, null, Collections.emptyList()),
-            arguments(IS_RERUN, oneDayAgo, List.of(JUDGMENT_ID_2)),
-            arguments(IS_RERUN, twoDaysAgo, Collections.emptyList())
-        );
+        LocalDateTime expectedReportedToRtl = expectedJudgment.getReportedToRtl();
+        if (expectedReportedToRtl == null) {
+            assertNull(judgment.getReportedToRtl(), "Judgment reported to RTL date should be null");
+        } else {
+            assertEquals(expectedReportedToRtl,
+                         judgment.getReportedToRtl(),
+                         "Judgment has unexpected reported to RTL value");
+        }
     }
 }

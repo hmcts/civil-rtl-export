@@ -34,44 +34,58 @@ public class ScheduledReportService {
      * @param serviceId - id of the service to generate reports for
      */
     public void generateReport(boolean test, LocalDateTime asOf, String serviceId) {
-        boolean rerun = asOf != null;
-        LocalDateTime reportedToRtlDate = asOf == null ? LocalDateTime.now() : asOf;
-
         log.info("Report generation has started");
 
         if (serviceId == null) {
-            log.debug("Finding judgments for all serviceIds: asOf [{}], rerun [{}], test [{}]", asOf, rerun, test);
-            List<Judgment> judgments = judgmentRepository.findForUpdate(rerun, asOf);
-
-            if (judgments.isEmpty()) {
-                log.info("No judgments found for any serviceId");
-            } else {
-                // Separate judgments out into separate lists by service id
-                Map<String, List<Judgment>> judgmentsGroupedByServiceId =
-                    judgments.stream().collect(groupingBy(Judgment::getServiceId));
-
-                for (Map.Entry<String, List<Judgment>> judgmentsServiceId : judgmentsGroupedByServiceId.entrySet()) {
-                    processJudgments(judgmentsServiceId.getValue(),
-                                     judgmentsServiceId.getKey(),
-                                     reportedToRtlDate,
-                                     rerun,
-                                     test);
-                }
-            }
-
+            generateReportForAllServiceIds(test, asOf);
         } else {
-            log.debug("Finding judgments for serviceId [{}]: asOf [{}], rerun [{}], test [{}]",
-                      serviceId, asOf, rerun, test);
-            List<Judgment> judgments = judgmentRepository.findForUpdateByServiceId(rerun, asOf, serviceId);
-
-            if (judgments.isEmpty()) {
-                log.info("No judgments found for serviceId [{}]", serviceId);
-            } else {
-                processJudgments(judgments, serviceId, reportedToRtlDate, rerun, test);
-            }
+            generateReportForServiceId(test, asOf, serviceId);
         }
 
         log.info("Report generation completed");
+    }
+
+    private void generateReportForAllServiceIds(boolean test, LocalDateTime asOf) {
+        boolean rerun = asOf != null;
+        LocalDateTime reportedToRtlDate = asOf == null ? LocalDateTime.now() : asOf;
+
+        log.debug("Finding judgments for all serviceIds: asOf [{}], rerun [{}], test [{}]", asOf, rerun, test);
+
+        List<Judgment> judgments = rerun ? judgmentRepository.findForRtlRerun(asOf) :
+            judgmentRepository.findForRtl();
+
+        if (judgments.isEmpty()) {
+            log.info("No judgments found for any serviceId");
+        } else {
+            // Separate judgments out into separate lists by service id
+            Map<String, List<Judgment>> judgmentsGroupedByServiceId =
+                judgments.stream().collect(groupingBy(Judgment::getServiceId));
+
+            for (Map.Entry<String, List<Judgment>> judgmentsServiceId : judgmentsGroupedByServiceId.entrySet()) {
+                processJudgments(judgmentsServiceId.getValue(),
+                                 judgmentsServiceId.getKey(),
+                                 reportedToRtlDate,
+                                 rerun,
+                                 test);
+            }
+        }
+    }
+
+    private void generateReportForServiceId(boolean test, LocalDateTime asOf, String serviceId) {
+        boolean rerun = asOf != null;
+        LocalDateTime reportedToRtlDate = asOf == null ? LocalDateTime.now() : asOf;
+
+        log.debug("Finding judgments for serviceId [{}]: asOf [{}], rerun [{}], test [{}]",
+                  serviceId, asOf, rerun, test);
+
+        List<Judgment> judgments = rerun ? judgmentRepository.findForRtlServiceIdRerun(asOf, serviceId) :
+            judgmentRepository.findForRtlServiceId(serviceId);
+
+        if (judgments.isEmpty()) {
+            log.info("No judgments found for serviceId [{}]", serviceId);
+        } else {
+            processJudgments(judgments, serviceId, reportedToRtlDate, rerun, test);
+        }
     }
 
     private void processJudgments(List<Judgment> judgments,
