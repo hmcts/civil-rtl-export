@@ -35,7 +35,7 @@ class ScheduledReportTaskTest {
     private ScheduledReportTask scheduledReportTask;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         scheduledReportTask = new ScheduledReportTask(mockScheduledReportService, null, NOT_TEST, null);
     }
 

@@ -18,7 +18,7 @@ class HousekeepingTaskTest {
     private HousekeepingTask housekeepingTask;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         housekeepingTask = new HousekeepingTask(mockHousekeepingService);
     }
 
