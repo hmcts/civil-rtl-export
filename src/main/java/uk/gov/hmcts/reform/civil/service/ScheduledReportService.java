@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
 import uk.gov.hmcts.reform.civil.repository.JudgmentRepository;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +37,18 @@ public class ScheduledReportService {
     public void generateReport(boolean test, LocalDateTime asOf, String serviceId) {
         log.info("Report generation has started");
 
+        LocalDateTime startTime = LocalDateTime.now();
+
         if (serviceId == null) {
             generateReportForAllServiceIds(test, asOf);
         } else {
             generateReportForServiceId(test, asOf, serviceId);
         }
 
+        LocalDateTime endTime = LocalDateTime.now();
+
         log.info("Report generation completed");
+        log.info("Elapsed time: {} second(s)", Duration.between(startTime, endTime).toSeconds());
     }
 
     private void generateReportForAllServiceIds(boolean test, LocalDateTime asOf) {
