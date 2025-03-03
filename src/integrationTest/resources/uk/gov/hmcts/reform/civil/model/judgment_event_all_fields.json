@@ -1,0 +1,36 @@
+{
+  "serviceId": "AAA3",
+  "judgmentId": "1001",
+  "judgmentEventTimeStamp": "2024-11-14T09:04:01Z",
+  "courtEpimsId": "123456",
+  "ccdCaseRef": "10000001",
+  "caseNumber": "0AA10001",
+  "judgmentAdminOrderTotal": 150.23,
+  "judgmentAdminOrderDate": "2024-11-13",
+  "registrationType": "C",
+  "cancellationDate": "2024-11-14",
+  "defendant1": {
+    "defendantName": "Def1FirstName Def1LastName",
+    "defendantAddress": {
+      "defendantAddressLine1": "Def1 addr line1",
+      "defendantAddressLine2": "Def1 addr line2",
+      "defendantAddressLine3": "Def1 addr line3",
+      "defendantAddressLine4": "Def1 addr line4",
+      "defendantAddressLine5": "Def1 addr line5",
+      "defendantPostcode": "DD1 1DD"
+    },
+    "defendantDateOfBirth": "2001-01-01"
+  },
+  "defendant2": {
+    "defendantName": "Def2FirstName Def2LastName",
+    "defendantAddress": {
+      "defendantAddressLine1": "Def2 addr line1",
+      "defendantAddressLine2": "Def2 addr line2",
+      "defendantAddressLine3": "Def2 addr line3",
+      "defendantAddressLine4": "Def2 addr line4",
+      "defendantAddressLine5": "Def2 addr line5",
+      "defendantPostcode": "DD2 2DD"
+    },
+    "defendantDateOfBirth": "2002-02-02"
+  }
+}
