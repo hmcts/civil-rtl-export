@@ -26,8 +26,10 @@ services:
       - $SERVER_PORT:$SERVER_PORT
     depends_on:
       - civil-rtl-export-database
+      - civil-rtl-export-sftp
     links:
       - civil-rtl-export-database
+      - civil-rtl-export-sftp
 
   civil-rtl-export-database:
     build:
@@ -44,6 +46,18 @@ services:
       - 5455:5432
     volumes:
       - civil-rtl-export-database-data:/var/lib/postgresql/data
+
+  civil-rtl-export-sftp:
+    build:
+      context: docker/sftp
+    image: hmcts/civil-rtl-export-sftp
+    command: sftp:pass:1001
+    healthcheck:
+      retries: 10
+    ports:
+      - "2222:22"
+    volumes:
+      - ./docker/sftp/data:/home/sftp/data
 
 volumes:
   civil-rtl-export-database-data:
