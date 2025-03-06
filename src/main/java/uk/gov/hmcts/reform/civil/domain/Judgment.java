@@ -23,6 +23,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class Judgment {
+
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
 
     @Id

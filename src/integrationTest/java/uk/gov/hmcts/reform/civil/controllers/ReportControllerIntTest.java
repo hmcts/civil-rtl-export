@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertFileNames
 import static uk.gov.hmcts.reform.civil.util.DirectoryTestHelper.assertNoFilesInDir;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("itest")
 @Transactional
 @Sql("report_controller_int_test.sql")

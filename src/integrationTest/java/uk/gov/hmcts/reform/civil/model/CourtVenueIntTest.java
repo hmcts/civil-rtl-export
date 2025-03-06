@@ -5,10 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.ObjectContent;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import uk.gov.hmcts.reform.civil.service.task.ScheduledTaskRunner;
 
 import java.io.IOException;
 
-@JsonTest
+@JsonTest(includeFilters = @ComponentScan.Filter(
+    type = FilterType.ASSIGNABLE_TYPE,
+    classes = ScheduledTaskRunner.class)
+)
 class CourtVenueIntTest {
 
     private final JacksonTester<CourtVenue> jacksonTester;
