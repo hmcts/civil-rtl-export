@@ -14,12 +14,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("itest")
 class GetWelcomeTest {
 
+    private final MockMvc mockMvc;
+
     @Autowired
-    private transient MockMvc mockMvc;
+    public GetWelcomeTest(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
 
     @DisplayName("Should welcome upon root request with 200 response code")
     @Test

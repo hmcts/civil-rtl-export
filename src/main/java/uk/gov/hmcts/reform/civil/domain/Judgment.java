@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 @Table(name = "JUDGMENTS")
 @Entity
@@ -90,6 +91,30 @@ public class Judgment {
 
     @Column(name = "REPORTED_TO_RTL")
     private LocalDateTime reportedToRtl;
+
+    public boolean equalsJudgment(Judgment judgment) {
+        return (
+            Objects.equals(serviceId, judgment.getServiceId())
+                && Objects.equals(judgmentId, judgment.getJudgmentId())
+                && Objects.equals(judgmentEventTimestamp, judgment.getJudgmentEventTimestamp())
+                && Objects.equals(courtCode, judgment.getCourtCode())
+                && Objects.equals(ccdCaseRef, judgment.getCcdCaseRef())
+                && Objects.equals(caseNumber, judgment.getCaseNumber())
+                && Objects.equals(judgmentAdminOrderTotal, judgment.getJudgmentAdminOrderTotal())
+                && Objects.equals(judgmentAdminOrderDate, judgment.getJudgmentAdminOrderDate())
+                && Objects.equals(registrationType, judgment.getRegistrationType())
+                && Objects.equals(cancellationDate, judgment.getCancellationDate())
+                && Objects.equals(defendantName, judgment.getDefendantName())
+                && Objects.equals(defendantAddressLine1, judgment.getDefendantAddressLine1())
+                && Objects.equals(defendantAddressLine2, judgment.getDefendantAddressLine2())
+                && Objects.equals(defendantAddressLine3, judgment.getDefendantAddressLine3())
+                && Objects.equals(defendantAddressLine4, judgment.getDefendantAddressLine4())
+                && Objects.equals(defendantAddressLine5, judgment.getDefendantAddressLine5())
+                && Objects.equals(defendantAddressPostcode, judgment.getDefendantAddressPostcode())
+                && Objects.equals(defendantDob, judgment.getDefendantDob())
+                && Objects.equals(reportedToRtl, judgment.getReportedToRtl())
+            );
+    }
 
     @Override
     public String toString() {

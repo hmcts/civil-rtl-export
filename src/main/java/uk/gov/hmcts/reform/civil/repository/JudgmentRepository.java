@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.civil.repository;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -34,4 +35,23 @@ public interface JudgmentRepository extends JpaRepository<Judgment, Long> {
     @Modifying
     @Query("DELETE FROM Judgment j WHERE j.reportedToRtl < :dateOfDeletion")
     int deleteJudgmentsBefore(@Param(PARAM_DATE_OF_DELETION) LocalDateTime dateOfDeletion);
+
+    default List<Judgment> findByEventDetails(String serviceId,
+                                              String judgmentId,
+                                              LocalDateTime judgmentEventTimestamp,
+                                              String caseNumber) {
+        Sort sortByJudgmentIdAsc = Sort.by(Sort.Direction.ASC, "judgmentId");
+        return findByEventDetails(serviceId, judgmentId, judgmentEventTimestamp, caseNumber, sortByJudgmentIdAsc);
+    }
+
+    @Query("SELECT j FROM Judgment j "
+        + "WHERE j.serviceId = :serviceId "
+        + "AND j.judgmentEventTimestamp = :timestamp "
+        + "AND j.caseNumber = :caseNumber "
+        + "AND (j.judgmentId = :#{#judgmentId + '-1'} OR j.judgmentId = :#{#judgmentId + '-2'})")
+    List<Judgment> findByEventDetails(@Param("serviceId") String serviceId,
+                                      @Param("judgmentId") String judgmentId,
+                                      @Param("timestamp") LocalDateTime judgmentEventTimestamp,
+                                      @Param("caseNumber") String caseNumber,
+                                      Sort sort);
 }

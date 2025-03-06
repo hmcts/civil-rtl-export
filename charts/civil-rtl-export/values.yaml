@@ -6,6 +6,9 @@ java: &javaValues # This is an anchor to reuse settings in Job mode.
   environment:
     JF_DB_NAME: civil_rtl_export
     JF_DB_PORT: 5432
+    IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    LOCATION_REF_DATA_URL: http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   keyVaults:
     civil-rtl-export:
       secrets:
@@ -17,6 +20,14 @@ java: &javaValues # This is an anchor to reuse settings in Job mode.
           alias: JF_DB_PASSWORD
         - name: civil-rtl-export-POSTGRES-HOST-V15
           alias: JF_DB_HOST
+        - name: civil-rtl-export-service-s2s-secret
+          alias: CIVIL_RTL_EXPORT_S2S_KEY
+        - name: civil-rtl-export-idam-client-secret
+          alias: IDAM_RTL_EXPORT_CLIENT_SECRET
+        - name: civil-rtl-export-system-user-username
+          alias: IDAM_RTL_EXPORT_USERNAME
+        - name: civil-rtl-export-system-user-password
+          alias: IDAM_RTL_EXPORT_PASSWORD
         - name: sftp-host
           alias: SFTP_HOST
         - name: sftp-port
