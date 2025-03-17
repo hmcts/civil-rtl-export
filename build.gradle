@@ -184,7 +184,7 @@ dependencies {
   testImplementation group: 'org.wiremock.integrations', name: 'wiremock-spring-boot', version: '3.9.0'
   testImplementation group: 'com.auth0', name: 'java-jwt', version: '4.5.0'
 
-  testImplementation(platform('org.junit:junit-bom:5.12.0'))
+  testImplementation(platform('org.junit:junit-bom:5.12.1'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
