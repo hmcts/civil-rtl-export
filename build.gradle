@@ -171,7 +171,7 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.4.0'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.5.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.5'
 
   // idam-legacy-auth-support is a replacement for idam-java-client
