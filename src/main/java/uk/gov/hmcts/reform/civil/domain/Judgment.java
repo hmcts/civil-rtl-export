@@ -10,10 +10,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Table(name = "JUDGMENTS")
@@ -21,6 +23,9 @@ import java.util.Objects;
 @Getter
 @Setter
 public class Judgment {
+
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "jud_seq")
     @SequenceGenerator(name = "jud_seq", sequenceName = "jud_seq", allocationSize = 1)
@@ -110,5 +115,58 @@ public class Judgment {
                 && Objects.equals(defendantDob, judgment.getDefendantDob())
                 && Objects.equals(reportedToRtl, judgment.getReportedToRtl())
             );
+    }
+
+    @Override
+    public String toString() {
+        return "Judgments[" + "id=" + id
+                + ", versionNumber=" + versionNumber
+                + ", serviceId=" + serviceId
+                + ", judgmentId=" + judgmentId
+                + ", judgmentEventTimestamp=" + judgmentEventTimestamp
+                + ", courtCode=" + courtCode
+                + ", ccdCaseRef=" + ccdCaseRef
+                + ", caseNumber=" + caseNumber
+                + ", judgmentAdminOrderTotal=" + judgmentAdminOrderTotal
+                + ", judgmentAdminOrderDate=" + judgmentAdminOrderDate
+                + ", registrationType=" + registrationType
+                + ", cancellationDate=" + cancellationDate
+                + ", defendantName=" + defendantName
+                + ", defendantAddressLine1=" + defendantAddressLine1
+                + ", defendantAddressLine2=" + defendantAddressLine2
+                + ", defendantAddressLine3=" + defendantAddressLine3
+                + ", defendantAddressLine4=" + defendantAddressLine4
+                + ", defendantAddressLine5=" + defendantAddressLine5
+                + ", defendantAddressPostcode=" + defendantAddressPostcode
+                + ", defendantDob=" + defendantDob
+                + ", reportedToRtl=" + reportedToRtl
+                + "]";
+    }
+
+    public String toFormattedString() {
+        return String.join("",
+                           courtCode,
+                           caseNumber,
+                           String.format("%011.2f", judgmentAdminOrderTotal),
+                           judgmentAdminOrderDate.format(DATE_FORMAT),
+                           registrationType,
+                           formattedOptionalDate(cancellationDate),
+                           StringUtils.rightPad(defendantName, 70),
+                           StringUtils.rightPad(defendantAddressLine1, 35),
+                           formattedOptionalAddressLine(defendantAddressLine2),
+                           formattedOptionalAddressLine(defendantAddressLine3),
+                           formattedOptionalAddressLine(defendantAddressLine4),
+                           formattedOptionalAddressLine(defendantAddressLine5),
+                           StringUtils.rightPad(defendantAddressPostcode, 8),
+                           formattedOptionalDate(defendantDob)
+        );
+    }
+
+    private String formattedOptionalDate(LocalDate date) {
+        return date != null ? date.format(DATE_FORMAT) : StringUtils.rightPad("", 8);
+    }
+
+    private String formattedOptionalAddressLine(String addressLine) {
+        return StringUtils.rightPad(addressLine == null ? "" : addressLine, 35);
     }
 }
