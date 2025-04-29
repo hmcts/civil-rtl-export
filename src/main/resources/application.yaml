@@ -106,6 +106,21 @@ ref-data:
     url: ${LOCATION_REF_DATA_URL:http://localhost:8991}
 
 rtl-export:
+  task:
+    scheduledReport:
+      asOf: ${SCHEDULED_REPORT_AS_OF:}
+      test: ${SCHEDULED_REPORT_TEST:false}
+      serviceId: ${SCHEDULED_REPORT_SERVICE_ID:}
+    housekeeping:
+      minimumAge: ${MINIMUM_AGE:90}
+  sftp:
+    host: ${SFTP_HOST:civil-rtl-export-sftp}
+    serverPort: ${SFTP_PORT:22}
+    userName: ${SFTP_USERNAME:sftp}
+    password: ${SFTP_PASSWORD:pass}
+    remoteDir: ${SFTP_REMOTE_DIR:data}
+    connectTimeout: ${SFTP_CONNECT_TIMEOUT:10000}
+    authTimeout: ${SFTP_AUTH_TIMEOUT:10000}
   validate:
     service-ids[0]: "AAA3"
     service-ids[1]: "AAA6"

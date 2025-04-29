@@ -3,9 +3,12 @@ package uk.gov.hmcts.reform.civil.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.civil.domain.Judgment;
+import uk.gov.hmcts.reform.civil.service.task.ScheduledTaskRunner;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@DataJpaTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(
+    type = FilterType.ASSIGNABLE_TYPE,
+    classes = ScheduledTaskRunner.class)
+)
 @ActiveProfiles(profiles = "itest")
 @Sql(scripts = {"judgment_repository_int_test.sql"})
 class JudgmentRepositoryIntTest {
@@ -52,7 +58,7 @@ class JudgmentRepositoryIntTest {
         assertNotNull(judgments, "Returned judgments should not be null");
         assertEquals(1, judgments.size(), "Unexpected number of judgments returned");
 
-        assertJudgment(judgments.get(0),
+        assertJudgment(judgments.getFirst(),
                        JUD_1_SERVICE_ID,
                        JUD_1_JUDGMENT_ID + JUDGMENT_ID_SUFFIX_1,
                        JUD_1_JUDGMENT_EVENT_TIMESTAMP,

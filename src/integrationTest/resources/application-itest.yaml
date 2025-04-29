@@ -7,6 +7,17 @@ spring:
       replace: none
 
 rtl-export:
+  task:
+    scheduledReport:
+      asOf: null
+      test: false
+      serviceId: null
+    housekeeping:
+      minimumAge: 90
+  sftp:
+    host: localhost
+    serverPort: 1024
+    remoteDir: data
   validate:
     service-ids[0]: "IT01"
     service-ids[1]: "IT02"
