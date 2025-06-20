@@ -172,7 +172,7 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.9.1'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.9.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.7'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
   implementation group: 'org.apache.sshd', name: 'sshd-sftp', version : '2.15.0'
