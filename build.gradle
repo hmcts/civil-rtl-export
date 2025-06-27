@@ -2,11 +2,11 @@ plugins {
   id 'application'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.5.0'
+  id 'org.springframework.boot' version '3.5.3'
   id 'com.github.ben-manes.versions' version '0.52.0'
   id 'org.sonarqube' version '6.2.0.5505'
-  id "org.flywaydb.flyway" version "11.8.2"
-  id "io.freefair.lombok" version "8.13.1"
+  id "org.flywaydb.flyway" version "11.10.0"
+  id "io.freefair.lombok" version "8.14"
   /*
     Applies analysis tools including checkstyle and OWASP Dependency checker.
     See https://github.com/hmcts/gradle-java-plugin
@@ -151,7 +151,7 @@ repositories {
 }
 
 ext {
-  log4JVersion = "2.24.3"
+  log4JVersion = "2.25.0"
   springCloudVersion = "2025.0.0"
 }
 
@@ -166,7 +166,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.8'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.9'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
 
@@ -175,8 +175,8 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.9.0'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.6'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.10.0'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.7'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
   implementation group: 'org.apache.sshd', name: 'sshd-sftp', version : '2.15.0'
 
@@ -184,13 +184,13 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'idam-legacy-auth-support', version: '0.1.7'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.2'
 
-  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.1'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.2'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.18.0'
   testImplementation group: 'org.wiremock.integrations', name: 'wiremock-spring-boot', version: '3.10.0'
   testImplementation group: 'com.auth0', name: 'java-jwt', version: '4.5.0'
 
-  testImplementation(platform('org.junit:junit-bom:5.13.0'))
+  testImplementation(platform('org.junit:junit-bom:5.13.2'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
