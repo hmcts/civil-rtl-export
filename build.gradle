@@ -5,7 +5,7 @@ plugins {
   id 'org.springframework.boot' version '3.5.3'
   id 'com.github.ben-manes.versions' version '0.52.0'
   id 'org.sonarqube' version '6.2.0.5505'
-  id "org.flywaydb.flyway" version "11.10.1"
+  id "org.flywaydb.flyway" version "11.10.2"
   id "io.freefair.lombok" version "8.14"
   /*
     Applies analysis tools including checkstyle and OWASP Dependency checker.
@@ -175,7 +175,7 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.10.1'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.10.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.7'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
   implementation group: 'org.apache.sshd', name: 'sshd-sftp', version : '2.15.0'
