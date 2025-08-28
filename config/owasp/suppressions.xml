@@ -15,10 +15,8 @@
   <suppress>
     <notes>Temporary Suppressions
       CVE-2025-48976
-      CVE-2025-48989
     </notes>
     <cve>CVE-2025-48976</cve>
-    <cve>CVE-2025-48989</cve>
   </suppress>
   <!--End of temporary suppression section -->
 
