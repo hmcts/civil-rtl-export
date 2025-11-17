@@ -181,7 +181,7 @@ dependencies {
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '11.17.0'
   implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.17.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.8'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.19.0'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   implementation group: 'org.apache.sshd', name: 'sshd-sftp', version : '2.16.0'
 
   // idam-legacy-auth-support is a replacement for idam-java-client
