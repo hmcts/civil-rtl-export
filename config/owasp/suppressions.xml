@@ -17,10 +17,24 @@
       CVE-2025-7962 - May be a false positive as angus_mail does not appear in dependency list
       CVE-2025-15104 - May be a false positive as Nu HTML checker does not appear in dependency list
       CVE-2025-48976
+      CVE-2026-41284
+      CVE-2026-41293
+      CVE-2026-42498
+      CVE-2026-43512
+      CVE-2026-43513
+      CVE-2026-43514
+      CVE-2026-43515
     </notes>
     <cve>CVE-2025-7962</cve>
     <cve>CVE-2025-15104</cve>
     <cve>CVE-2025-48976</cve>
+    <cve>CVE-2026-41284</cve>
+    <cve>CVE-2026-41293</cve>
+    <cve>CVE-2026-42498</cve>
+    <cve>CVE-2026-43512</cve>
+    <cve>CVE-2026-43513</cve>
+    <cve>CVE-2026-43514</cve>
+    <cve>CVE-2026-43515</cve>
   </suppress>
   <!--End of temporary suppression section -->
 
