@@ -26,6 +26,8 @@
       CVE-2026-55276 - See CRF-32
       CVE-2026-55955 - See CRF-32
       CVE-2026-55956 - See CRF-32
+      CVE-2026-59083 - See CRF-34
+      CVE-2026-59084 - See CRF-34
     </notes>
     <cve>CVE-2025-7962</cve>
     <cve>CVE-2025-15104</cve>
@@ -39,6 +41,8 @@
     <cve>CVE-2026-55276</cve>
     <cve>CVE-2026-55955</cve>
     <cve>CVE-2026-55956</cve>
+    <cve>CVE-2026-59083</cve>
+    <cve>CVE-2026-59084</cve>
   </suppress>
   <!--End of temporary suppression section -->
 
