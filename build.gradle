@@ -117,6 +117,7 @@ jacocoTestReport {
   }
 }
 
+project.tasks['sonarResolver'].dependsOn processResources
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 project.tasks['check'].dependsOn integration
 
