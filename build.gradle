@@ -27,6 +27,15 @@ java {
 }
 
 sourceSets {
+  contractTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/contractTest/java')
+    }
+    resources.srcDir file('src/contractTest/resources')
+  }
+
   functionalTest {
     java {
       compileClasspath += main.output
@@ -56,6 +65,9 @@ sourceSets {
 }
 
 configurations {
+  contractTestImplementation.extendsFrom testImplementation
+  contractTestRuntimeOnly.extendsFrom runtimeOnly
+
   functionalTestImplementation.extendsFrom testImplementation
   functionalTestRuntimeOnly.extendsFrom runtimeOnly
 
@@ -106,6 +118,21 @@ task smoke(type: Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+tasks.register('providerContractTests', Test) {
+  description = 'Runs provider Pact verification tests'
+  group = 'Verification'
+
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+tasks.register('runProviderPactVerification') {
+  description = 'Entry point for Jenkins to run provider contract tests'
+  group = 'Verification'
+
+  dependsOn tasks.named('providerContractTests')
 }
 
 jacocoTestReport {
@@ -193,6 +220,8 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.23.0'
   testImplementation group: 'org.wiremock.integrations', name: 'wiremock-spring-boot', version: '3.10.6'
   testImplementation group: 'com.auth0', name: 'java-jwt', version: '4.6.0'
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.6.17'
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.6.17'
 
   testImplementation(platform('org.junit:junit-bom:6.1.3'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
