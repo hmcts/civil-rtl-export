@@ -28,7 +28,19 @@
       CVE-2026-55956 - See CRF-32
       CVE-2026-59083 - See CRF-34
       CVE-2026-59084 - See CRF-34
+      CVE-2026-59313 - See CRF-37
+      CVE-2026-59314 - See CRF-37
+      CVE-2026-65182 - See CRF-36
+      CVE-2026-65183 - See CRF-36
+      CVE-2026-65637 - See CRF-36
+      CVE-2026-65905 - See CRF-36
+      CVE-2026-65927 - See CRF-36
       CVE-2026-66299 - See CRF-35
+      CVE-2026-66422 - See CRF-36
+      CVE-2026-68525 - See CRF-36
+      CVE-2026-68569 - See CRF-36
+      CVE-2026-68763 - See CRF-36
+      CVE-2026-73180 - See CRF-36
     </notes>
     <cve>CVE-2025-7962</cve>
     <cve>CVE-2025-15104</cve>
@@ -44,7 +56,19 @@
     <cve>CVE-2026-55956</cve>
     <cve>CVE-2026-59083</cve>
     <cve>CVE-2026-59084</cve>
+    <cve>CVE-2026-59313</cve>
+    <cve>CVE-2026-59314</cve>
+    <cve>CVE-2026-65182</cve>
+    <cve>CVE-2026-65183</cve>
+    <cve>CVE-2026-65637</cve>
+    <cve>CVE-2026-65905</cve>
+    <cve>CVE-2026-65927</cve>
     <cve>CVE-2026-66299</cve>
+    <cve>CVE-2026-66422</cve>
+    <cve>CVE-2026-68525</cve>
+    <cve>CVE-2026-68569</cve>
+    <cve>CVE-2026-68763</cve>
+    <cve>CVE-2026-73180</cve>
   </suppress>
   <!--End of temporary suppression section -->
 
