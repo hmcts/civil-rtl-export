@@ -16,6 +16,8 @@
     <notes>Temporary Suppressions
       CVE-2025-7962 - May be a false positive as angus_mail does not appear in dependency list
       CVE-2025-15104 - May be a false positive as Nu HTML checker does not appear in dependency list
+      CVE-2026-47890 - See CRF-37
+      CVE-2026-47891 - See CRF-37
       CVE-2026-47892 - See CRF-37
       CVE-2026-47893 - See CRF-37
       CVE-2025-48976 - See CRF-21
@@ -31,7 +33,10 @@
       CVE-2026-59083 - See CRF-34
       CVE-2026-59084 - See CRF-34
       CVE-2026-59270 - See CRF-38
+      CVE-2026-59276 - See CRF-38
       CVE-2026-59280 - See CRF-37
+      CVE-2026-59281 - See CRF-37
+      CVE-2026-59282 - See CRF-37
       CVE-2026-59283 - See CRF-37
       CVE-2026-59313 - See CRF-37
       CVE-2026-59314 - See CRF-37
@@ -49,6 +54,8 @@
     </notes>
     <cve>CVE-2025-7962</cve>
     <cve>CVE-2025-15104</cve>
+    <cve>CVE-2026-47890</cve>
+    <cve>CVE-2026-47891</cve>
     <cve>CVE-2026-47892</cve>
     <cve>CVE-2026-47893</cve>
     <cve>CVE-2025-48976</cve>
@@ -64,7 +71,10 @@
     <cve>CVE-2026-59083</cve>
     <cve>CVE-2026-59084</cve>
     <cve>CVE-2026-59270</cve>
+    <cve>CVE-2026-59276</cve>
     <cve>CVE-2026-59280</cve>
+    <cve>CVE-2026-59281</cve>
+    <cve>CVE-2026-59282</cve>
     <cve>CVE-2026-59283</cve>
     <cve>CVE-2026-59313</cve>
     <cve>CVE-2026-59314</cve>
