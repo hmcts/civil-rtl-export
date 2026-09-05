@@ -2,7 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>hmcts/.github:renovate-config",
-    "local>hmcts/.github//renovate/automerge-minor"
+    "local>hmcts/.github//renovate/automerge-minor",
+    "local>hmcts/.github//renovate/cnp-jenkins-library"
   ],
   "schedule": ["* 8-18 * * 1-5"],
   "automergeSchedule": ["* 8-18 * * 1-5"],

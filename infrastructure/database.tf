@@ -1,5 +1,5 @@
 module "postgresql-v15" {
-  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
 
   providers = {
     azurerm.postgres_network = azurerm.private_endpoint
