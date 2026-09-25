@@ -185,7 +185,7 @@ dependencies {
   implementation group: 'org.apache.sshd', name: 'sshd-sftp', version : '2.19.0'
 
   // idam-legacy-auth-support is a replacement for idam-java-client
-  implementation group: 'com.github.hmcts', name: 'idam-legacy-auth-support', version: '0.1.7'
+  implementation group: 'com.github.hmcts', name: 'idam-legacy-auth-support', version: '1.0.1'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
 
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
