@@ -120,19 +120,24 @@ task smoke(type: Test) {
   classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
-tasks.register('providerContractTests', Test) {
+tasks.register('runProviderPactVerification', Test) {
   description = 'Runs provider Pact verification tests'
   group = 'Verification'
 
+  useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
-}
+  include 'uk/gov/hmcts/reform/civil/provider/**'
 
-tasks.register('runProviderPactVerification') {
-  description = 'Entry point for Jenkins to run provider contract tests'
-  group = 'Verification'
-
-  dependsOn tasks.named('providerContractTests')
+  if (project.hasProperty('pact.verifier.publishResults')) {
+    systemProperty 'pact.verifier.publishResults', project.property('pact.verifier.publishResults')
+  }
+  if (project.hasProperty('pact.provider.version')) {
+    systemProperty 'pact.provider.version', project.property('pact.provider.version')
+  }
+  if (project.hasProperty('pact.provider.branch')) {
+    systemProperty 'pact.provider.branch', project.property('pact.provider.branch')
+  }
 }
 
 jacocoTestReport {

@@ -23,7 +23,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Provider("rtl")
 @PactBroker(
-    url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
+    scheme = "${PACT_BROKER_SCHEME:http}",
+    host = "${PACT_BROKER_URL:localhost}",
+    port = "${PACT_BROKER_PORT:80}",
     providerBranch = "${pact.provider.branch:master}"
 )
 @IgnoreNoPactsToVerify
@@ -43,11 +45,6 @@ class RtlProviderContractTest {
 
     @BeforeEach
     void beforeEach(PactVerificationContext context) {
-        String brokerUrl = System.getenv("PACT_BROKER_FULL_URL");
-        if (brokerUrl != null && !brokerUrl.isBlank()) {
-            System.setProperty("pactbroker.url", brokerUrl);
-        }
-
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new JudgmentEventController(judgmentEventService))
             .setMessageConverters(new MappingJackson2HttpMessageConverter())
             .alwaysDo(result -> result.getResponse().setContentType(APPLICATION_JSON_VALUE))
