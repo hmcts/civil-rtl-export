@@ -8,12 +8,11 @@ import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
 import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,14 +27,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
     providerBranch = "${pact.provider.branch:master}"
 )
 @IgnoreNoPactsToVerify
+@ExtendWith(MockitoExtension.class)
 class RtlProviderContractTest {
-
-    private MockMvc mockMvc;
 
     @Mock
     private JudgmentEventService judgmentEventService;
-
-    private AutoCloseable mocks;
 
     @PactBrokerConsumerVersionSelectors
     public static SelectorBuilder consumerVersionSelectors() {
@@ -46,16 +42,13 @@ class RtlProviderContractTest {
     }
 
     @BeforeEach
-    @SuppressWarnings("java:S2699")
     void beforeEach(PactVerificationContext context) {
         String brokerUrl = System.getenv("PACT_BROKER_FULL_URL");
         if (brokerUrl != null && !brokerUrl.isBlank()) {
             System.setProperty("pactbroker.url", brokerUrl);
         }
 
-        mocks = MockitoAnnotations.openMocks(this);
-
-        mockMvc = MockMvcBuilders.standaloneSetup(new JudgmentEventController(judgmentEventService))
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new JudgmentEventController(judgmentEventService))
             .setMessageConverters(new MappingJackson2HttpMessageConverter())
             .alwaysDo(result -> result.getResponse().setContentType(APPLICATION_JSON_VALUE))
             .build();
@@ -64,13 +57,6 @@ class RtlProviderContractTest {
         target.setMockMvc(mockMvc);
         if (context != null) {
             context.setTarget(target);
-        }
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        if (mocks != null) {
-            mocks.close();
         }
     }
 
